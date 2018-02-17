@@ -16,6 +16,8 @@
 #undef yywrap
 #define yywrap() 1
 
+#define yyterminate() return VCDParser::parser::make_END(loc)
+
 static VCDParser::location loc;
     
 %}
@@ -48,10 +50,9 @@ TIME_NUMBER         1|10|100
 TIME_UNIT           s|ms|us|ns|ps|fs
 VAR_TYPE            event|integer|parameter|real|realtime|reg|supply0|supply1|time|tri|triand|trior|trireg|tri0|tri1|wand|wire|wor
 HASH                #
-VALUE               (0|1|x|X|z|Z)+
-BIN_NUM             b|B
-REAL_NUM            r|R
-REAL_NUMBER         (0-9)+[\.(0.9)+]
+SCALAR_NUM          0|1|x|X|z|Z       
+BIN_NUM             (b|B)(0|1|x|X|z|Z)+
+REAL_NUM            (r|r)(0-9)+[\.(0.9)+]
 IDENTIFIER_CODE     [a-zA-Z_0-9!/\.@':~#\*\(\)\+\{\}\$]+
 SCOPE_IDENTIFIER    [a-zA-Z_][a-zA-Z_0-9]+
 DECIMAL_NUM         [0-9]+
@@ -67,6 +68,9 @@ VERSION_TEXT        .*
 %x IN_SCOPE
 %x IN_VAR
 %x IN_VAR_RNG
+%x IN_SIMTIME
+%x IN_VAL_CHANGES
+%x IN_VAL_IDCODE
 
 %{
 #define YY_USER_ACTION loc.columns(yyleng);
@@ -80,13 +84,11 @@ VERSION_TEXT        .*
 
 
 {KW_END} {
-    std::cout << yytext << ", " << std::endl;
     return VCDParser::parser::make_TOK_KW_END(loc);
 }
 
-<IN_VAR,IN_VAR_RNG,IN_VERSION,IN_DATE,IN_COMMENT,IN_TIMESCALE,IN_SCOPE>{KW_END} {
+<IN_VAL_IDCODE,IN_VAR,IN_VAR_RNG,IN_VERSION,IN_DATE,IN_COMMENT,IN_TIMESCALE,IN_SCOPE>{KW_END} {
     BEGIN(INITIAL);
-    std::cout << yytext << ", " << std::endl;
     return VCDParser::parser::make_TOK_KW_END(loc);
 }
 
@@ -226,9 +228,67 @@ VERSION_TEXT        .*
     return VCDParser::parser::make_TOK_BRACKET_C(loc);
 }
 
+{HASH} {
+    BEGIN(IN_SIMTIME);
+    return VCDParser::parser::make_TOK_HASH(loc);
+}
 
-" " {}
-"\t" {}
+<IN_SIMTIME>{DECIMAL_NUM} {
+    BEGIN(INITIAL);
+    return VCDParser::parser::make_TOK_DECIMAL_NUM(loc);
+}
+
+{KW_DUMPALL} {
+    BEGIN(IN_VAL_CHANGES);
+    std::cout << yytext << ", ";
+    return VCDParser::parser::make_TOK_KW_DUMPALL(loc);
+}
+
+{KW_DUMPOFF} {
+    BEGIN(IN_VAL_CHANGES);
+    std::cout << yytext << ", ";
+    return VCDParser::parser::make_TOK_KW_DUMPOFF(loc);
+}
+
+{KW_DUMPON} {
+    BEGIN(IN_VAL_CHANGES);
+    std::cout << yytext << ", ";
+    return VCDParser::parser::make_TOK_KW_DUMPON(loc);
+}
+
+{KW_DUMPVARS} {
+    BEGIN(IN_VAL_CHANGES);
+    std::cout << yytext << ", ";
+    return VCDParser::parser::make_TOK_KW_DUMPVARS(loc);
+}
+
+<IN_VAL_CHANGES,INITIAL>{SCALAR_NUM} {
+    std::cout << yytext << ", ";
+    BEGIN(IN_VAL_IDCODE);
+    return VCDParser::parser::make_TOK_VALUE(loc);
+}
+
+<IN_VAL_CHANGES,INITIAL>{BIN_NUM} {
+    std::cout << yytext << ", ";
+    BEGIN(IN_VAL_IDCODE);
+    return VCDParser::parser::make_TOK_BIN_NUM(loc);
+}
+
+<IN_VAL_CHANGES,INITIAL>{REAL_NUM} {
+    std::cout << yytext << ", ";
+    BEGIN(IN_VAL_IDCODE);
+    return VCDParser::parser::make_TOK_REAL_NUM(loc);
+}
+
+<IN_VAL_IDCODE>{IDENTIFIER_CODE} {
+    std::cout << yytext << std::endl;
+    BEGIN(IN_VAL_CHANGES);
+    return VCDParser::parser::make_TOK_IDENTIFIER(loc);
+}
+
+
+" " {loc.columns();}
+"\t" {loc.columns();}
 "\n" {loc.lines();}
 "\r" {loc.lines();}
 
