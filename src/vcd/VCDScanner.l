@@ -11,12 +11,12 @@
 #include <string>
 
 #include "VCDFileParser.hpp"
-#include "parser.hpp"
+#include "VCDParser.hpp"
 
 #undef yywrap
 #define yywrap() 1
 
-static yy::location loc;
+static VCDParser::location loc;
     
 %}
 
@@ -37,11 +37,11 @@ PAREN_C         ")"
 
 
 {PAREN_O} {
-    return yy::parser::make_TOK_PAREN_O(loc);
+    return VCDParser::parser::make_TOK_PAREN_O(loc);
 }
 
 {PAREN_C} {
-    return yy::parser::make_TOK_PAREN_C(loc);
+    return VCDParser::parser::make_TOK_PAREN_C(loc);
 }
 
 " " {}
@@ -50,7 +50,7 @@ PAREN_C         ")"
 "\r" {}
 
 <<EOF>> {
-    return yy::parser::make_END(loc);
+    return VCDParser::parser::make_END(loc);
 }
 
 %%

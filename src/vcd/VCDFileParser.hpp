@@ -10,10 +10,10 @@
 #include <map>
 #include <set>
 
-#include "parser.hpp"
+#include "VCDParser.hpp"
 
 #define YY_DECL \
-    yy::parser::symbol_type yylex (VCDFileParser & driver)
+    VCDParser::parser::symbol_type yylex (VCDFileParser & driver)
 
 YY_DECL;
 
@@ -45,7 +45,7 @@ class VCDFileParser {
         bool trace_parsing;
 
         //! Reports errors to stderr.
-        void error(const yy::location & l, const std::string & m);
+        void error(const VCDParser::location & l, const std::string & m);
 
         //! Reports errors to stderr.
         void error(const std::string & m);
