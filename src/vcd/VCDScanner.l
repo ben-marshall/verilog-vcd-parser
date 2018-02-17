@@ -230,11 +230,13 @@ VERSION_TEXT        .*
 
 {HASH} {
     BEGIN(IN_SIMTIME);
+    std::cout << "simtime: " << yytext << ", ";
     return VCDParser::parser::make_TOK_HASH(loc);
 }
 
 <IN_SIMTIME>{DECIMAL_NUM} {
     BEGIN(INITIAL);
+    std::cout << yytext << std::endl;
     return VCDParser::parser::make_TOK_DECIMAL_NUM(loc);
 }
 
@@ -282,7 +284,7 @@ VERSION_TEXT        .*
 
 <IN_VAL_IDCODE>{IDENTIFIER_CODE} {
     std::cout << yytext << std::endl;
-    BEGIN(IN_VAL_CHANGES);
+    BEGIN(INITIAL);
     return VCDParser::parser::make_TOK_IDENTIFIER(loc);
 }
 
