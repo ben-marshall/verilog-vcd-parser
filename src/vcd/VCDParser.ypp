@@ -97,14 +97,14 @@ simulation_commands:
 
 declaration_command :
     TOK_KW_COMMENT  comment_text     TOK_KW_END
-|   TOK_KW_DATE     TOK_DATE_TEXT    TOK_KW_END
+|   TOK_KW_DATE     date_text        TOK_KW_END
 |   TOK_KW_ENDDEFINITIONS TOK_KW_END
 |   TOK_KW_SCOPE    scope_type TOK_IDENTIFIER TOK_KW_END
 |   TOK_KW_TIMESCALE TOK_TIME_NUMBER TOK_TIME_UNIT TOK_KW_END
 |   TOK_KW_UPSCOPE  TOK_KW_END
 |   TOK_KW_VAR      TOK_VAR_TYPE TOK_DECIMAL_NUM TOK_IDENTIFIER reference 
     TOK_KW_END
-|   TOK_KW_VERSION  TOK_VERSION_TEXT TOK_KW_END
+|   TOK_KW_VERSION  version_text TOK_KW_END
 ;
 
 simulation_command :
@@ -151,6 +151,16 @@ comment_text :
     %empty
 |   TOK_COMMENT_TEXT
 |   comment_text TOK_COMMENT_TEXT
+
+version_text :
+    %empty
+|   TOK_VERSION_TEXT
+|   version_text TOK_VERSION_TEXT
+
+date_text:
+    %empty
+|   TOK_DATE_TEXT
+|   date_text TOK_DATE_TEXT
 
 %%
 
