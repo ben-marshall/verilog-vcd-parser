@@ -10,10 +10,10 @@
 #include <map>
 #include <set>
 
-#include "parser.hpp"
+#include "COVParser.hpp"
 
 #define YY_DECL \
-    yy::parser::symbol_type yylex (COVFileParser & driver)
+    COVParser::parser::symbol_type COVParserlex (COVFileParser & driver)
 
 YY_DECL;
 
@@ -45,7 +45,7 @@ class COVFileParser {
         bool trace_parsing;
 
         //! Reports errors to stderr.
-        void error(const yy::location & l, const std::string & m);
+        void error(const COVParser::location & l, const std::string & m);
 
         //! Reports errors to stderr.
         void error(const std::string & m);

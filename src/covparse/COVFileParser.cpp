@@ -15,15 +15,6 @@ COVFileParser::COVFileParser() {
 COVFileParser::~COVFileParser() {
 
 }
-        
-/*!
-*/
-bool COVFileParser::resolve_references () {
-
-    bool to_return = true;
-
-    return to_return;
-}
 
 int COVFileParser::parse_file(const std::string &filepath) {
 
@@ -31,7 +22,7 @@ int COVFileParser::parse_file(const std::string &filepath) {
     
     scan_begin();
 
-    yy::parser parser(*this);
+    COVParser::parser parser(*this);
 
     parser.set_debug_level(trace_parsing);
 
@@ -44,7 +35,7 @@ int COVFileParser::parse_file(const std::string &filepath) {
 }
         
 
-void COVFileParser::error(const yy::location & l, const std::string & m){
+void COVFileParser::error(const COVParser::location & l, const std::string & m){
     std::cerr << l << " : "<<m<<std::endl;
 }
 
@@ -52,3 +43,24 @@ void COVFileParser::error(const std::string & m){
     std::cerr << " : "<<m<<std::endl;
 }
 
+
+#ifdef COV_PARSER_STANDALONE
+
+/*!
+@brief Standalone test function to allow testing of the COV file parser.
+*/
+int main (int argc, char** argv){
+
+    std::string infile (argv[1]);
+
+    std::cout << "Parsing " << infile << std::endl;
+
+    COVFileParser parser;
+
+    int result = parser.parse_file(infile);
+
+    return result;
+}
+
+
+#endif
