@@ -3,8 +3,8 @@
 @brief Contains the declaration of the parser driver class.
 */
 
-#ifndef VCD_PARSER_DRIVER_HPP
-#define VCD_PARSER_DRIVER_HPP
+#ifndef COVERAGE_PARSER_DRIVER_HPP
+#define COVERAGE_PARSER_DRIVER_HPP
 
 #include <string>
 #include <map>
@@ -13,7 +13,7 @@
 #include "parser.hpp"
 
 #define YY_DECL \
-    yy::parser::symbol_type yylex (VCDFileParser & driver)
+    yy::parser::symbol_type yylex (COVFileParser & driver)
 
 YY_DECL;
 
@@ -21,13 +21,13 @@ YY_DECL;
 /*!
 @brief Class for parsing files containing CSP notation.
 */
-class VCDFileParser {
+class COVFileParser {
 
     public:
         
         //! Create a new parser/
-        VCDFileParser();
-        virtual ~VCDFileParser();
+        COVFileParser();
+        virtual ~COVFileParser();
         
         /*!
         @brief Parse the suppled file.

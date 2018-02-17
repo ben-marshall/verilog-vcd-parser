@@ -1,0 +1,63 @@
+/*!
+@file
+@brief Contains the grammar definition for the parser.
+*/
+
+%skeleton "lalr1.cc"
+%defines
+%define parser_class_name {parser}
+%define api.token.constructor
+%define api.value.type variant
+%define parse.assert
+%file-prefix "COVParser"
+%name-prefix "COVParser"
+
+%code requires 
+{
+    #include <string>
+    #include <map>
+
+    class COVFileParser;
+}
+
+%param {COVFileParser & driver}
+
+%locations
+%initial-action {
+    @$.begin.filename = @$.end.filename = &driver.filepath;
+}
+
+%define parse.trace
+%define parse.error verbose
+
+%code{
+
+#include "COVFileParser.hpp"
+
+}
+
+%token END  0 "end of file"
+%token TOK_PAREN_O          "("
+%token TOK_PAREN_C          ")"
+
+%%
+
+input :
+    %empty
+|   brackets
+;
+
+brackets :
+    TOK_PAREN_O TOK_PAREN_C
+|   TOK_PAREN_O brackets TOK_PAREN_C
+|   brackets brackets
+;
+
+%%
+
+
+void yy::parser::error (
+    const location_type& l,
+    const std::string& m) {
+    driver.error(l,m);
+}
