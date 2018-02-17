@@ -22,19 +22,6 @@ static VCDParser::location loc;
 
 %option noyywrap nounput batch debug noinput
 
-%x EXPECT_ID
-%x EXPECT_SIZE
-%x EXPECT_ID_CODE
-%x EXPECT_DECIMAL
-%x EXPECT_DECIMAL_TIME
-%x EXPECT_TIME_UNIT
-%x EXPECT_TIME_NUMBER
-%x EXPECT_REAL_NUM
-%x IN_DUMP_VARS
-%x IN_DUMP_CODE
-%x EXPECT_VAR_TYPE
-%x SCOPE_ID
-
 BRACKET_O           \[
 BRACKET_C           \]
 COLON               :
@@ -65,10 +52,21 @@ VALUE               (0|1|x|X|z|Z)+
 BIN_NUM             b|B
 REAL_NUM            r|R
 REAL_NUMBER         (0-9)+[\.(0.9)+]
-IDENTIFIER          (.)+
 IDENTIFIER_CODE     [a-zA-Z_0-9!/\.@':~#\*\(\)\+\{\}\$]+
 SCOPE_IDENTIFIER    [a-zA-Z_][a-zA-Z_0-9]+
 DECIMAL_NUM         [0-9]+
+
+COMMENT_TEXT        .*
+DATE_TEXT           .*
+VERSION_TEXT        .*
+
+%x IN_COMMENT
+%x IN_DATE
+%x IN_VERSION
+%x IN_TIMESCALE
+%x IN_SCOPE
+%x IN_VAR
+%x IN_VAR_RNG
 
 %{
 #define YY_USER_ACTION loc.columns(yyleng);
@@ -80,206 +78,159 @@ DECIMAL_NUM         [0-9]+
     loc.step();
 %}
 
-" " {}
-"\t" {}
-"\n" {}
-"\r" {}
 
-{BRACKET_O} {
-    BEGIN(EXPECT_SIZE);
-    return VCDParser::parser::make_TOK_BRACKET_O(loc);
-    }
-
-{BRACKET_C} {
-    return VCDParser::parser::make_TOK_BRACKET_C(loc);
-    }
-
-{COLON} {
-    BEGIN(EXPECT_SIZE);
-    return VCDParser::parser::make_TOK_COLON(loc);
-    }
-
-{DOLLAR} {
-    return VCDParser::parser::make_TOK_DOLLAR(loc);
-    }
-
-<*>{KW_END} {
-    BEGIN(INITIAL);
-    std::cout<<"END: " << yytext <<std::endl;
+{KW_END} {
+    std::cout << yytext << ", " << std::endl;
     return VCDParser::parser::make_TOK_KW_END(loc);
-    }
+}
+
+<IN_VAR,IN_VAR_RNG,IN_VERSION,IN_DATE,IN_COMMENT,IN_TIMESCALE,IN_SCOPE>{KW_END} {
+    BEGIN(INITIAL);
+    std::cout << yytext << ", " << std::endl;
+    return VCDParser::parser::make_TOK_KW_END(loc);
+}
 
 {KW_COMMENT} {
-    BEGIN(EXPECT_ID);
-    std::cout<<"COMMENT: " << yytext <<std::endl;
+    BEGIN(IN_COMMENT);
+    std::cout << yytext << ", ";
     return VCDParser::parser::make_TOK_KW_COMMENT(loc);
-    }
+}
+
+<IN_COMMENT>{COMMENT_TEXT} {
+    std::cout << yytext << ", ";
+    return VCDParser::parser::make_TOK_COMMENT_TEXT(loc);
+}
 
 {KW_DATE} {
-    BEGIN(EXPECT_ID);
-    std::cout<<"DATE: " << yytext <<std::endl;
+    BEGIN(IN_DATE);
     return VCDParser::parser::make_TOK_KW_DATE(loc);
-    }
+}
 
-{KW_ENDDEFINITIONS} {
-    return VCDParser::parser::make_TOK_KW_ENDDEFINITIONS(loc);
-    }
-
-{KW_SCOPE} {
-    std::cout<<"SCOPE: " << yytext ;
-    return VCDParser::parser::make_TOK_KW_SCOPE(loc);
-    }
-
-{KW_TIMESCALE} {
-    BEGIN(EXPECT_TIME_NUMBER);
-    return VCDParser::parser::make_TOK_KW_TIMESCALE(loc);
-    }
-
-{KW_UPSCOPE} {
-    return VCDParser::parser::make_TOK_KW_UPSCOPE(loc);
-    }
-
-{KW_VAR} {
-    BEGIN(EXPECT_VAR_TYPE);
-    return VCDParser::parser::make_TOK_KW_VAR(loc);
-    }
+<IN_DATE>{DATE_TEXT} {
+    return VCDParser::parser::make_TOK_DATE_TEXT(loc);
+}
 
 {KW_VERSION} {
-    BEGIN(EXPECT_ID);
+    BEGIN(IN_VERSION);
     return VCDParser::parser::make_TOK_KW_VERSION(loc);
-    }
+}
 
-{KW_DUMPALL} {
-    BEGIN(IN_DUMP_VARS);
-    return VCDParser::parser::make_TOK_KW_DUMPALL(loc);
-    }
+<IN_VERSION>{VERSION_TEXT} {
+    return VCDParser::parser::make_TOK_VERSION_TEXT(loc);
+}
 
-{KW_DUMPOFF} {
-    BEGIN(IN_DUMP_VARS);
-    return VCDParser::parser::make_TOK_KW_DUMPOFF(loc);
-    }
+{KW_TIMESCALE} {
+    BEGIN(IN_TIMESCALE);
+    return VCDParser::parser::make_TOK_KW_TIMESCALE(loc);
+}
 
-{KW_DUMPON} {
-    BEGIN(IN_DUMP_VARS);
-    return VCDParser::parser::make_TOK_KW_DUMPON(loc);
-    }
-
-{KW_DUMPVARS} {
-    BEGIN(IN_DUMP_VARS);
-    return VCDParser::parser::make_TOK_KW_DUMPVARS(loc);
-    }
-
-{KW_BEGIN} {
-    BEGIN(SCOPE_ID);
-    std::cout<<": " << yytext <<std::endl;
-    return VCDParser::parser::make_TOK_KW_BEGIN(loc);
-    }
-
-{KW_FORK} {
-    BEGIN(SCOPE_ID);
-    std::cout<<": " << yytext <<std::endl;
-    return VCDParser::parser::make_TOK_KW_FORK(loc);
-    }
-
-{KW_FUNCTION} {
-    BEGIN(SCOPE_ID);
-    std::cout<<": " << yytext <<std::endl;
-    return VCDParser::parser::make_TOK_KW_FUNCTION(loc);
-    }
-
-{KW_MODULE} {
-    BEGIN(SCOPE_ID);
-    std::cout<<": " << yytext <<std::endl;
-    return VCDParser::parser::make_TOK_KW_MODULE(loc);
-    }
-
-{KW_TASK} {
-    BEGIN(SCOPE_ID);
-    std::cout<<": " << yytext <<std::endl;
-    return VCDParser::parser::make_TOK_KW_TASK(loc);
-    }
-
-<EXPECT_TIME_NUMBER>{TIME_NUMBER} {
-    BEGIN(EXPECT_TIME_UNIT);
+<IN_TIMESCALE>{TIME_NUMBER} {
     return VCDParser::parser::make_TOK_TIME_NUMBER(loc);
-    }
+}
 
-<EXPECT_TIME_UNIT>{TIME_UNIT} {
-    BEGIN(INITIAL);
+<IN_TIMESCALE>{TIME_UNIT} {
     return VCDParser::parser::make_TOK_TIME_UNIT(loc);
-    }
+}
 
-<EXPECT_VAR_TYPE>{VAR_TYPE} {
-    BEGIN(EXPECT_DECIMAL);
-    std::cout<<"VAR_TYPE: " << yytext <<std::endl;
+
+{KW_SCOPE} {
+    BEGIN(IN_SCOPE);
+    std::cout << yytext << ", ";
+    return VCDParser::parser::make_TOK_KW_SCOPE(loc);
+}
+
+<IN_SCOPE>{KW_BEGIN} {
+    std::cout << yytext << ", ";
+    return VCDParser::parser::make_TOK_KW_BEGIN(loc);
+}
+
+<IN_SCOPE>{KW_FORK} {
+    std::cout << yytext << ", ";
+    return VCDParser::parser::make_TOK_KW_FORK(loc);
+}
+
+<IN_SCOPE>{KW_FUNCTION} {
+    std::cout << yytext << ", ";
+    return VCDParser::parser::make_TOK_KW_FUNCTION(loc);
+}
+
+<IN_SCOPE>{KW_MODULE} {
+    std::cout << yytext << ", ";
+    return VCDParser::parser::make_TOK_KW_MODULE(loc);
+}
+
+<IN_SCOPE>{KW_TASK} {
+    std::cout << yytext << ", ";
+    return VCDParser::parser::make_TOK_KW_TASK(loc);
+}
+
+<IN_SCOPE>{SCOPE_IDENTIFIER} {
+    std::cout << yytext << ", ";
+    return VCDParser::parser::make_TOK_IDENTIFIER(loc);
+}
+
+{KW_UPSCOPE} {
+    std::cout << yytext << ", ";
+    return VCDParser::parser::make_TOK_KW_UPSCOPE(loc);
+}
+
+{KW_ENDDEFINITIONS} {
+    std::cout << yytext << ", ";
+    return VCDParser::parser::make_TOK_KW_ENDDEFINITIONS(loc);
+}
+
+{KW_VAR} {
+    BEGIN(IN_VAR);
+    std::cout << yytext << ", ";
+    return VCDParser::parser::make_TOK_KW_VAR(loc);
+}
+
+<IN_VAR>{VAR_TYPE} {
+    std::cout << yytext << ", ";
     return VCDParser::parser::make_TOK_VAR_TYPE(loc);
-    }
+}
 
-{HASH} {
-    BEGIN(EXPECT_DECIMAL_TIME);
-    return VCDParser::parser::make_TOK_HASH(loc);
-    }
-
-<IN_DUMP_VARS>{BIN_NUM} {
-    std::cout<<"DUMP VECTOR BIN: " << yytext <<std::endl;
-    return VCDParser::parser::make_TOK_BIN_NUM(loc);
-    }
-<IN_DUMP_VARS>{VALUE} {
-    BEGIN(IN_DUMP_CODE);
-    std::cout<<"DUMP VALUE: " << yytext <<std::endl;
-    return VCDParser::parser::make_TOK_VALUE(loc);
-    }
-<IN_DUMP_CODE>{IDENTIFIER_CODE} {
-    BEGIN(IN_DUMP_VARS);
-    std::cout<<"DUMP CODE IDENTIFIER: " << yytext <<std::endl;
-    return VCDParser::parser::make_TOK_IDENTIFIER(loc);
-    }
-
-
-<EXPECT_REAL_NUM>{REAL_NUM} {
-    return VCDParser::parser::make_TOK_REAL_NUM(loc);
-    }
-
-{REAL_NUMBER} {
-    return VCDParser::parser::make_TOK_REAL_NUMBER(loc);
-    }
-
-<EXPECT_ID_CODE>{IDENTIFIER_CODE} {
-    BEGIN(SCOPE_ID);
-    std::cout<<"CODE IDENTIFIER: " << yytext <<std::endl;
-    return VCDParser::parser::make_TOK_IDENTIFIER(loc);
-    }
-
-<SCOPE_ID>{SCOPE_IDENTIFIER} {
-    BEGIN(INITIAL);
-    std::cout<<"SCOPE IDENTIFIER: " << yytext <<std::endl;
-    return VCDParser::parser::make_TOK_IDENTIFIER(loc);
-    }
-
-<EXPECT_ID>{IDENTIFIER} {
-    BEGIN(INITIAL);
-    std::cout<<"IDENTIFIER: " << yytext <<std::endl;
-    return VCDParser::parser::make_TOK_IDENTIFIER(loc);
-    }
-
-<EXPECT_DECIMAL_TIME>{DECIMAL_NUM} {
-    BEGIN(INITIAL);
-    std::cout<<"SIM TIME: " << yytext <<std::endl;
+<IN_VAR>{DECIMAL_NUM} {
+    std::cout << yytext << ", ";
     return VCDParser::parser::make_TOK_DECIMAL_NUM(loc);
-    }
+}
 
-<EXPECT_SIZE>{DECIMAL_NUM} {
-    BEGIN(INITIAL);
-    std::cout<<"SIZE: " << yytext <<std::endl;
+<IN_VAR>{IDENTIFIER_CODE} {
+    std::cout << yytext << ", ";
+    return VCDParser::parser::make_TOK_IDENTIFIER(loc);
+}
+
+<IN_VAR>{SCOPE_IDENTIFIER} {
+    std::cout << yytext << ", ";
+    return VCDParser::parser::make_TOK_IDENTIFIER(loc);
+}
+
+<IN_VAR>{BRACKET_O} {
+    BEGIN(IN_VAR_RNG);
+    std::cout << yytext << ", ";
+    return VCDParser::parser::make_TOK_BRACKET_O(loc);
+}
+
+<IN_VAR_RNG>{DECIMAL_NUM} {
+    std::cout << yytext << ", ";
     return VCDParser::parser::make_TOK_DECIMAL_NUM(loc);
-    }
+}
 
-<EXPECT_DECIMAL>{DECIMAL_NUM} {
-    BEGIN(EXPECT_ID_CODE);
-    std::cout<<"SIZE: " << yytext <<std::endl;
-    return VCDParser::parser::make_TOK_DECIMAL_NUM(loc);
-    }
+<IN_VAR_RNG>{COLON} {
+    std::cout << yytext << ", ";
+    return VCDParser::parser::make_TOK_COLON(loc);
+}
 
+<IN_VAR_RNG>{BRACKET_C} {
+    std::cout << yytext << ", ";
+    return VCDParser::parser::make_TOK_BRACKET_C(loc);
+}
+
+
+" " {}
+"\t" {}
+"\n" {loc.lines();}
+"\r" {loc.lines();}
 
 <<EOF>> {
     return VCDParser::parser::make_END(loc);

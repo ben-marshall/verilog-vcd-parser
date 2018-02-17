@@ -36,7 +36,9 @@ int VCDFileParser::parse_file(const std::string &filepath) {
         
 
 void VCDFileParser::error(const VCDParser::location & l, const std::string & m){
-    std::cerr << l << " : "<<m<<std::endl;
+    std::cerr << "line "<< l.begin.line 
+              << std::endl;
+    std::cerr << " : "<<m<<std::endl;
 }
 
 void VCDFileParser::error(const std::string & m){

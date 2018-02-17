@@ -42,13 +42,16 @@
 %token TOK_DOLLAR            
 %token TOK_KW_END            
 %token TOK_KW_COMMENT        
+%token TOK_COMMENT_TEXT
 %token TOK_KW_DATE           
+%token TOK_DATE_TEXT
 %token TOK_KW_ENDDEFINITIONS 
 %token TOK_KW_SCOPE          
 %token TOK_KW_TIMESCALE      
 %token TOK_KW_UPSCOPE        
 %token TOK_KW_VAR            
 %token TOK_KW_VERSION        
+%token TOK_VERSION_TEXT
 %token TOK_KW_DUMPALL        
 %token TOK_KW_DUMPOFF        
 %token TOK_KW_DUMPON         
@@ -93,16 +96,15 @@ simulation_commands:
 ;
 
 declaration_command :
-    TOK_KW_COMMENT  comment_text TOK_KW_END
-|   TOK_KW_DATE     date_text    TOK_KW_END
+    TOK_KW_COMMENT  comment_text     TOK_KW_END
+|   TOK_KW_DATE     TOK_DATE_TEXT    TOK_KW_END
 |   TOK_KW_ENDDEFINITIONS TOK_KW_END
 |   TOK_KW_SCOPE    scope_type TOK_IDENTIFIER TOK_KW_END
 |   TOK_KW_TIMESCALE TOK_TIME_NUMBER TOK_TIME_UNIT TOK_KW_END
 |   TOK_KW_UPSCOPE  TOK_KW_END
 |   TOK_KW_VAR      TOK_VAR_TYPE TOK_DECIMAL_NUM TOK_IDENTIFIER reference 
     TOK_KW_END
-|   TOK_KW_VERSION  version_text system_task TOK_KW_END
-|   TOK_KW_VERSION  version_text TOK_KW_END
+|   TOK_KW_VERSION  TOK_VERSION_TEXT TOK_KW_END
 ;
 
 simulation_command :
@@ -146,15 +148,9 @@ reference:
     TOK_BRACKET_C
 
 comment_text :
-    TOK_IDENTIFIER
-|   comment_text TOK_IDENTIFIER
-;
-
-system_task: TOK_DOLLAR TOK_IDENTIFIER
-
-date_text   : TOK_IDENTIFIER
-
-version_text : TOK_IDENTIFIER
+    %empty
+|   TOK_COMMENT_TEXT
+|   comment_text TOK_COMMENT_TEXT
 
 %%
 
