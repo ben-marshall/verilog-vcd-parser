@@ -36,22 +36,121 @@
 
 }
 
+%token TOK_BRACKET_O         
+%token TOK_BRACKET_C         
+%token TOK_COLON             
+%token TOK_DOLLAR            
+%token TOK_KW_END            
+%token TOK_KW_COMMENT        
+%token TOK_COMMENT_TEXT      
+%token TOK_KW_DATE           
+%token TOK_KW_ENDDEFINITIONS 
+%token TOK_KW_SCOPE          
+%token TOK_KW_TIMESCALE      
+%token TOK_KW_UPSCOPE        
+%token TOK_KW_VAR            
+%token TOK_KW_VERSION        
+%token TOK_KW_DUMPALL        
+%token TOK_KW_DUMPOFF        
+%token TOK_KW_DUMPON         
+%token TOK_KW_DUMPVARS       
+%token TOK_KW_BEGIN          
+%token TOK_KW_FORK           
+%token TOK_KW_FUNCTION       
+%token TOK_KW_MODULE         
+%token TOK_KW_TASK           
+%token TOK_TIME_NUMBER       
+%token TOK_TIME_UNIT         
+%token TOK_VAR_TYPE          
+%token TOK_HASH              
+%token TOK_VALUE             
+%token TOK_BIN_NUM           
+%token TOK_BINARY_NUMBER     
+%token TOK_REAL_NUM          
+%token TOK_REAL_NUMBER       
+%token TOK_IDENTIFIER        
+%token TOK_DECIMAL_NUM       
 %token END  0 "end of file"
-%token TOK_PAREN_O          "("
-%token TOK_PAREN_C          ")"
+
+%start input
 
 %%
 
 input :
     %empty
-|   brackets
+|   declaration_commands simulation_commands
+|   simulation_commands
+|   declaration_commands 
 ;
 
-brackets :
-    TOK_PAREN_O TOK_PAREN_C
-|   TOK_PAREN_O brackets TOK_PAREN_C
-|   brackets brackets
+declaration_commands :
+    declaration_command
+|   declaration_commands declaration_command
 ;
+
+simulation_commands:
+    simulation_command
+|   simulation_commands simulation_command 
+;
+
+declaration_command :
+    TOK_KW_COMMENT  TOK_COMMENT_TEXT
+|   TOK_KW_DATE     date_text    TOK_KW_END
+|   TOK_KW_ENDDEFINITIONS TOK_KW_END
+|   TOK_KW_SCOPE    scope_type TOK_IDENTIFIER TOK_KW_END
+|   TOK_KW_TIMESCALE TOK_TIME_NUMBER TOK_TIME_UNIT TOK_KW_END
+|   TOK_KW_UPSCOPE  TOK_KW_END
+|   TOK_KW_VAR      TOK_VAR_TYPE TOK_DECIMAL_NUM TOK_IDENTIFIER reference 
+    TOK_KW_END
+|   TOK_KW_VERSION  version_text system_task TOK_KW_END
+|   TOK_KW_VERSION  version_text TOK_KW_END
+;
+
+simulation_command :
+    TOK_KW_DUMPALL  value_changes TOK_KW_END
+|   TOK_KW_DUMPOFF  value_changes TOK_KW_END
+|   TOK_KW_DUMPON   value_changes TOK_KW_END
+|   TOK_KW_DUMPVARS value_changes TOK_KW_END
+|   TOK_KW_COMMENT  value_changes TOK_KW_END
+|   simulation_time
+|   value_change
+;
+
+scope_type :
+    TOK_KW_BEGIN
+|   TOK_KW_FORK
+|   TOK_KW_FUNCTION
+|   TOK_KW_MODULE
+|   TOK_KW_TASK
+;
+
+simulation_time : TOK_HASH TOK_DECIMAL_NUM
+
+value_changes :
+    value_change
+|   value_changes value_change
+
+value_change:
+    scalar_value_change
+|   vector_value_change
+
+scalar_value_change:  TOK_VALUE TOK_IDENTIFIER
+
+vector_value_change: 
+    TOK_BIN_NUM TOK_BINARY_NUMBER
+|   TOK_REAL_NUM TOK_REAL_NUMBER
+
+reference:
+    TOK_IDENTIFIER
+|   TOK_IDENTIFIER TOK_BRACKET_O TOK_DECIMAL_NUM TOK_BRACKET_C
+|   TOK_IDENTIFIER TOK_BRACKET_O TOK_DECIMAL_NUM TOK_COLON TOK_DECIMAL_NUM
+    TOK_BRACKET_C
+
+system_task: TOK_DOLLAR TOK_IDENTIFIER
+
+date_text   : TOK_IDENTIFIER
+
+version_text : TOK_IDENTIFIER
 
 %%
 
