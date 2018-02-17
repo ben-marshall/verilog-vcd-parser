@@ -42,7 +42,6 @@
 %token TOK_DOLLAR            
 %token TOK_KW_END            
 %token TOK_KW_COMMENT        
-%token TOK_COMMENT_TEXT      
 %token TOK_KW_DATE           
 %token TOK_KW_ENDDEFINITIONS 
 %token TOK_KW_SCOPE          
@@ -94,7 +93,7 @@ simulation_commands:
 ;
 
 declaration_command :
-    TOK_KW_COMMENT  TOK_COMMENT_TEXT
+    TOK_KW_COMMENT  comment_text TOK_KW_END
 |   TOK_KW_DATE     date_text    TOK_KW_END
 |   TOK_KW_ENDDEFINITIONS TOK_KW_END
 |   TOK_KW_SCOPE    scope_type TOK_IDENTIFIER TOK_KW_END
@@ -137,14 +136,19 @@ value_change:
 scalar_value_change:  TOK_VALUE TOK_IDENTIFIER
 
 vector_value_change: 
-    TOK_BIN_NUM TOK_BINARY_NUMBER
-|   TOK_REAL_NUM TOK_REAL_NUMBER
+    TOK_BIN_NUM TOK_VALUE
+|   TOK_REAL_NUM TOK_VALUE
 
 reference:
     TOK_IDENTIFIER
 |   TOK_IDENTIFIER TOK_BRACKET_O TOK_DECIMAL_NUM TOK_BRACKET_C
 |   TOK_IDENTIFIER TOK_BRACKET_O TOK_DECIMAL_NUM TOK_COLON TOK_DECIMAL_NUM
     TOK_BRACKET_C
+
+comment_text :
+    TOK_IDENTIFIER
+|   comment_text TOK_IDENTIFIER
+;
 
 system_task: TOK_DOLLAR TOK_IDENTIFIER
 

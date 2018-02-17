@@ -26,6 +26,13 @@ static VCDParser::location loc;
 %x EXPECT_SIZE
 %x EXPECT_ID_CODE
 %x EXPECT_DECIMAL
+%x EXPECT_DECIMAL_TIME
+%x EXPECT_TIME_UNIT
+%x EXPECT_TIME_NUMBER
+%x EXPECT_REAL_NUM
+%x IN_DUMP_VARS
+%x IN_DUMP_CODE
+%x EXPECT_VAR_TYPE
 %x SCOPE_ID
 
 BRACKET_O           \[
@@ -54,13 +61,12 @@ TIME_NUMBER         1|10|100
 TIME_UNIT           s|ms|us|ns|ps|fs
 VAR_TYPE            event|integer|parameter|real|realtime|reg|supply0|supply1|time|tri|triand|trior|trireg|tri0|tri1|wand|wire|wor
 HASH                #
-VALUE               0|1|x|X|z|Z
+VALUE               (0|1|x|X|z|Z)+
 BIN_NUM             b|B
-BINARY_NUMBER       (0|1)+
 REAL_NUM            r|R
 REAL_NUMBER         (0-9)+[\.(0.9)+]
 IDENTIFIER          (.)+
-IDENTIFIER_CODE     [a-zA-Z_0-9!/@':~#\*\(\)\+\{\}\$]+
+IDENTIFIER_CODE     [a-zA-Z_0-9!/\.@':~#\*\(\)\+\{\}\$]+
 SCOPE_IDENTIFIER    [a-zA-Z_][a-zA-Z_0-9]+
 DECIMAL_NUM         [0-9]+
 
@@ -97,7 +103,7 @@ DECIMAL_NUM         [0-9]+
     return VCDParser::parser::make_TOK_DOLLAR(loc);
     }
 
-{KW_END} {
+<*>{KW_END} {
     BEGIN(INITIAL);
     std::cout<<"END: " << yytext <<std::endl;
     return VCDParser::parser::make_TOK_KW_END(loc);
@@ -105,6 +111,7 @@ DECIMAL_NUM         [0-9]+
 
 {KW_COMMENT} {
     BEGIN(EXPECT_ID);
+    std::cout<<"COMMENT: " << yytext <<std::endl;
     return VCDParser::parser::make_TOK_KW_COMMENT(loc);
     }
 
@@ -124,6 +131,7 @@ DECIMAL_NUM         [0-9]+
     }
 
 {KW_TIMESCALE} {
+    BEGIN(EXPECT_TIME_NUMBER);
     return VCDParser::parser::make_TOK_KW_TIMESCALE(loc);
     }
 
@@ -132,6 +140,7 @@ DECIMAL_NUM         [0-9]+
     }
 
 {KW_VAR} {
+    BEGIN(EXPECT_VAR_TYPE);
     return VCDParser::parser::make_TOK_KW_VAR(loc);
     }
 
@@ -141,18 +150,22 @@ DECIMAL_NUM         [0-9]+
     }
 
 {KW_DUMPALL} {
+    BEGIN(IN_DUMP_VARS);
     return VCDParser::parser::make_TOK_KW_DUMPALL(loc);
     }
 
 {KW_DUMPOFF} {
+    BEGIN(IN_DUMP_VARS);
     return VCDParser::parser::make_TOK_KW_DUMPOFF(loc);
     }
 
 {KW_DUMPON} {
+    BEGIN(IN_DUMP_VARS);
     return VCDParser::parser::make_TOK_KW_DUMPON(loc);
     }
 
 {KW_DUMPVARS} {
+    BEGIN(IN_DUMP_VARS);
     return VCDParser::parser::make_TOK_KW_DUMPVARS(loc);
     }
 
@@ -186,37 +199,44 @@ DECIMAL_NUM         [0-9]+
     return VCDParser::parser::make_TOK_KW_TASK(loc);
     }
 
-{TIME_NUMBER} {
+<EXPECT_TIME_NUMBER>{TIME_NUMBER} {
+    BEGIN(EXPECT_TIME_UNIT);
     return VCDParser::parser::make_TOK_TIME_NUMBER(loc);
     }
 
-{TIME_UNIT} {
+<EXPECT_TIME_UNIT>{TIME_UNIT} {
+    BEGIN(INITIAL);
     return VCDParser::parser::make_TOK_TIME_UNIT(loc);
     }
 
-{VAR_TYPE} {
+<EXPECT_VAR_TYPE>{VAR_TYPE} {
     BEGIN(EXPECT_DECIMAL);
     std::cout<<"VAR_TYPE: " << yytext <<std::endl;
     return VCDParser::parser::make_TOK_VAR_TYPE(loc);
     }
 
 {HASH} {
+    BEGIN(EXPECT_DECIMAL_TIME);
     return VCDParser::parser::make_TOK_HASH(loc);
     }
 
-{VALUE} {
-    return VCDParser::parser::make_TOK_VALUE(loc);
-    }
-
-{BIN_NUM} {
+<IN_DUMP_VARS>{BIN_NUM} {
+    std::cout<<"DUMP VECTOR BIN: " << yytext <<std::endl;
     return VCDParser::parser::make_TOK_BIN_NUM(loc);
     }
-
-{BINARY_NUMBER} {
-    return VCDParser::parser::make_TOK_BINARY_NUMBER(loc);
+<IN_DUMP_VARS>{VALUE} {
+    BEGIN(IN_DUMP_CODE);
+    std::cout<<"DUMP VALUE: " << yytext <<std::endl;
+    return VCDParser::parser::make_TOK_VALUE(loc);
+    }
+<IN_DUMP_CODE>{IDENTIFIER_CODE} {
+    BEGIN(IN_DUMP_VARS);
+    std::cout<<"DUMP CODE IDENTIFIER: " << yytext <<std::endl;
+    return VCDParser::parser::make_TOK_IDENTIFIER(loc);
     }
 
-{REAL_NUM} {
+
+<EXPECT_REAL_NUM>{REAL_NUM} {
     return VCDParser::parser::make_TOK_REAL_NUM(loc);
     }
 
@@ -240,6 +260,12 @@ DECIMAL_NUM         [0-9]+
     BEGIN(INITIAL);
     std::cout<<"IDENTIFIER: " << yytext <<std::endl;
     return VCDParser::parser::make_TOK_IDENTIFIER(loc);
+    }
+
+<EXPECT_DECIMAL_TIME>{DECIMAL_NUM} {
+    BEGIN(INITIAL);
+    std::cout<<"SIM TIME: " << yytext <<std::endl;
+    return VCDParser::parser::make_TOK_DECIMAL_NUM(loc);
     }
 
 <EXPECT_SIZE>{DECIMAL_NUM} {
