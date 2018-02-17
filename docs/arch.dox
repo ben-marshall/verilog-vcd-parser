@@ -17,6 +17,8 @@ The main data objects within the VCD parser are:
 - VCDSignal
 - VCDValue
 
+Code for the VCD parser lives in `src/vcd/`
+
 @section arch-coverage-parser Coverage Parser
 
 The Coverage parser component is a Flex/Bison parser which can parse a
@@ -28,10 +30,14 @@ The main data objects within the coverage parser are be:
 - CovPoint
 - CovBin
 
+Code for the coverage parser lives in `src/covparse/`
+
 @section arch-coverage-engine Coverage Engine
 
 The coverage engine takes one or more VCD files and a coverage group, and
 feeds the VCD into the coverage groups, counting all coverage bin hits as it
 goes.
+
+Code for the coverage engine lives in `src/engine/`
 
 */

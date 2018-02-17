@@ -20,4 +20,4 @@ $(LEX_OUT) : $(LEX_SRC) $(YAC_OUT)
 clean:
 	rm -rf $(LEX_OUT) $(LEX_HEADER) $(LEX_OBJ) \
            $(YAC_OUT) $(YAC_HEADER) $(YAC_OBJ) \
-           position.hh stack.hh location.hh parser.output
+           position.hh stack.hh location.hh VCDParser.output

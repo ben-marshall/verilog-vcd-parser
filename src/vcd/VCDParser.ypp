@@ -9,8 +9,8 @@
 %define api.token.constructor
 %define api.value.type variant
 %define parse.assert
-%file-prefix VCDParser
-%name-prefix VCDParser
+%file-prefix "VCDParser"
+%name-prefix "VCDParser"
 
 %code requires 
 {
