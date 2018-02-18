@@ -37,6 +37,9 @@
 
 #include "VCDFileParser.hpp"
 
+//! Current time while parsing the VCD file.
+VCDTime current_time = 0;
+
 }
 
 %token                  TOK_BRACKET_O         
@@ -176,7 +179,8 @@ scope_type :
 ;
 
 simulation_time : TOK_HASH TOK_DECIMAL_NUM {
-    driver.fh -> times.push_back($2);
+    current_time =  $2;
+    driver.fh    -> times.push_back($2);
 }
 
 value_changes :
@@ -187,11 +191,17 @@ value_change:
     scalar_value_change
 |   vector_value_change
 
-scalar_value_change:  TOK_VALUE TOK_IDENTIFIER
+scalar_value_change:  TOK_VALUE TOK_IDENTIFIER {
+    driver.fh -> val_map[$2][current_time] = 0;
+}
 
 vector_value_change: 
-    TOK_BIN_NUM     TOK_IDENTIFIER
-|   TOK_REAL_NUM    TOK_IDENTIFIER
+    TOK_BIN_NUM     TOK_IDENTIFIER {
+    driver.fh -> val_map[$2][current_time] = 0;
+}
+|   TOK_REAL_NUM    TOK_IDENTIFIER {
+    driver.fh -> val_map[$2][current_time] = 0;
+}
 
 reference:
     TOK_IDENTIFIER {

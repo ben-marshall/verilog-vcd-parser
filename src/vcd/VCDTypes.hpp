@@ -29,6 +29,9 @@ typedef unsigned VCDTimeRes;
 //! Width in bits of a signal.
 typedef unsigned VCDSignalSize;
 
+//! Type over a VCD signal value.
+typedef unsigned VCDValue;
+
 //! Variable types of a signal in a VCD file.
 typedef enum {
     VCD_VAR_EVENT,
@@ -73,7 +76,7 @@ typedef enum {
 } VCDScopeType;
 
 
-// Typedef over vcdscope.
+// Typedef over vcdscope to make it available to VCDSignal struct.
 typedef struct vcdscope VCDScope;
 
 //! Represents a single signal reference within a VCD file
@@ -86,7 +89,7 @@ typedef struct {
 } VCDSignal;
 
 
-//! Represents a scope type, scope name pair.
+//! Represents a scope type, scope name pair and all of it's child signals.
 struct vcdscope {
     VCDScopeName              name;     //!< The short name of the scope
     VCDScopeType              type;     //!< Construct type
