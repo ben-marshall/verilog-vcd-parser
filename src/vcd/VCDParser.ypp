@@ -45,7 +45,7 @@
 %token                  TOK_DOLLAR            
 %token                  TOK_KW_END            
 %token                  TOK_KW_COMMENT        
-%token                  TOK_COMMENT_TEXT
+%token <std::string>    TOK_COMMENT_TEXT
 %token                  TOK_KW_DATE           
 %token <std::string>    TOK_DATE_TEXT
 %token                  TOK_KW_ENDDEFINITIONS 
@@ -79,6 +79,12 @@
 
 %start input
 
+%type <std::string>     comment_text
+%type <std::string>     version_text 
+%type <std::string>     date_text
+%type <std::string>     reference
+%type <VCDScopeType>    scope_type
+
 %%
 
 input :
@@ -100,14 +106,21 @@ simulation_commands:
 
 declaration_command :
     TOK_KW_COMMENT  comment_text     TOK_KW_END
-|   TOK_KW_DATE     date_text        TOK_KW_END
+|   TOK_KW_DATE     date_text        TOK_KW_END {
+    driver.fh -> date = $2;
+}
 |   TOK_KW_ENDDEFINITIONS TOK_KW_END
 |   TOK_KW_SCOPE    scope_type TOK_IDENTIFIER TOK_KW_END
-|   TOK_KW_TIMESCALE TOK_TIME_NUMBER TOK_TIME_UNIT TOK_KW_END
+|   TOK_KW_TIMESCALE TOK_TIME_NUMBER TOK_TIME_UNIT TOK_KW_END {
+    driver.fh -> time_resolution = $2;
+    driver.fh -> time_units      = $3;
+}
 |   TOK_KW_UPSCOPE  TOK_KW_END
 |   TOK_KW_VAR      TOK_VAR_TYPE TOK_DECIMAL_NUM TOK_IDENTIFIER reference 
     TOK_KW_END
-|   TOK_KW_VERSION  version_text TOK_KW_END
+|   TOK_KW_VERSION  version_text TOK_KW_END {
+    driver.fh -> version = $2;
+}
 ;
 
 simulation_command :
@@ -145,25 +158,58 @@ vector_value_change:
 |   TOK_REAL_NUM    TOK_IDENTIFIER
 
 reference:
-    TOK_IDENTIFIER
-|   TOK_IDENTIFIER TOK_BRACKET_O TOK_DECIMAL_NUM TOK_BRACKET_C
+    TOK_IDENTIFIER {
+    $$ = $1;
+}
+|   TOK_IDENTIFIER TOK_BRACKET_O TOK_DECIMAL_NUM TOK_BRACKET_C{
+    $$ = $1;
+    $$.append("[");
+    $$.append("]");
+}
 |   TOK_IDENTIFIER TOK_BRACKET_O TOK_DECIMAL_NUM TOK_COLON TOK_DECIMAL_NUM
-    TOK_BRACKET_C
+    TOK_BRACKET_C{
+    $$ = $1;
+    $$.append("[");
+    $$.append(":");
+    $$.append("]");
+}
 
 comment_text :
-    %empty
-|   TOK_COMMENT_TEXT
-|   comment_text TOK_COMMENT_TEXT
+    %empty  {
+    $$ = std::string("");
+}
+|   TOK_COMMENT_TEXT {
+    $$ = std::string($1);
+}
+|   comment_text TOK_COMMENT_TEXT{
+    $$ = $1;
+    $$.append($2);
+}
 
 version_text :
-    %empty
-|   TOK_VERSION_TEXT
-|   version_text TOK_VERSION_TEXT
+    %empty{
+    $$ = std::string("");
+}
+|   TOK_VERSION_TEXT {
+    $$ = std::string($1);
+}
+|   version_text TOK_VERSION_TEXT {
+    $$ = $1;
+    $$.append($2);
+}
+
 
 date_text:
-    %empty
-|   TOK_DATE_TEXT
-|   date_text TOK_DATE_TEXT
+    %empty{
+    $$ = std::string("");
+}
+|   TOK_DATE_TEXT {
+    $$ = std::string($1);
+}
+|   date_text TOK_DATE_TEXT {
+    $$ = $1;
+    $$.append($2);
+}
 
 %%
 

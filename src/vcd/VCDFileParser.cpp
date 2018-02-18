@@ -75,6 +75,9 @@ int main (int argc, char** argv){
 
     if(result) {
         std::cout << "Parse successful." << std::endl;
+        std::cout << "Version: " << result -> version << std::endl;
+        std::cout << "Date:    " << result -> date << std::endl;
+
         delete result;
         
         return 0;

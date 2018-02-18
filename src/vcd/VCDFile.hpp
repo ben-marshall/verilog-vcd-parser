@@ -34,6 +34,13 @@ class VCDFile {
             VCDScopeName name
         );
         
+
+        //! Timescale of the VCD file.
+        VCDTimeUnit time_units;
+
+        //! Multiplier of the VCD file time units.
+        VCDTimeRes  time_resolution;
+        
         //! Date string of the VCD file.
         std::string date;
 

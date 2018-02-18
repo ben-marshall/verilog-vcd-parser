@@ -75,9 +75,9 @@ IDENTIFIER_CODE     [a-zA-Z_0-9!/\,\.@':~#\*\(\)\+\{\}\$\%\[\]`\"&;<>=\?\-\^\(\)
 SCOPE_IDENTIFIER    [a-zA-Z_][a-zA-Z_0-9\(\)]+
 DECIMAL_NUM         [0-9]+
 
-COMMENT_TEXT        [^("$end")]*
-DATE_TEXT           [^("$end")]*
-VERSION_TEXT        [^("$end")]*
+COMMENT_TEXT        [^("$")]*
+DATE_TEXT           [^("$")]*
+VERSION_TEXT        [^("$")]*
 
 %x IN_COMMENT
 %x IN_DATE
@@ -120,7 +120,7 @@ VERSION_TEXT        [^("$end")]*
 
 <IN_COMMENT>{COMMENT_TEXT} {
     //std::cout << yytext << ", ";
-    return VCDParser::parser::make_TOK_COMMENT_TEXT(loc);
+    return VCDParser::parser::make_TOK_COMMENT_TEXT(std::string(yytext),loc);
 }
 
 {KW_DATE} {
