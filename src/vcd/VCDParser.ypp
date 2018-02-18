@@ -39,43 +39,43 @@
 
 }
 
-%token TOK_BRACKET_O         
-%token TOK_BRACKET_C         
-%token TOK_COLON             
-%token TOK_DOLLAR            
-%token TOK_KW_END            
-%token TOK_KW_COMMENT        
-%token TOK_COMMENT_TEXT
-%token TOK_KW_DATE           
-%token TOK_DATE_TEXT
-%token TOK_KW_ENDDEFINITIONS 
-%token TOK_KW_SCOPE          
-%token TOK_KW_TIMESCALE      
-%token TOK_KW_UPSCOPE        
-%token TOK_KW_VAR            
-%token TOK_KW_VERSION        
-%token TOK_VERSION_TEXT
-%token TOK_KW_DUMPALL        
-%token TOK_KW_DUMPOFF        
-%token TOK_KW_DUMPON         
-%token TOK_KW_DUMPVARS       
-%token TOK_KW_BEGIN          
-%token TOK_KW_FORK           
-%token TOK_KW_FUNCTION       
-%token TOK_KW_MODULE         
-%token TOK_KW_TASK           
-%token TOK_TIME_NUMBER       
-%token TOK_TIME_UNIT         
-%token TOK_VAR_TYPE          
-%token TOK_HASH              
-%token TOK_VALUE             
-%token TOK_BIN_NUM           
-%token TOK_BINARY_NUMBER     
-%token TOK_REAL_NUM          
-%token TOK_REAL_NUMBER       
-%token TOK_IDENTIFIER        
-%token TOK_DECIMAL_NUM       
-%token END  0 "end of file"
+%token                  TOK_BRACKET_O         
+%token                  TOK_BRACKET_C         
+%token                  TOK_COLON             
+%token                  TOK_DOLLAR            
+%token                  TOK_KW_END            
+%token                  TOK_KW_COMMENT        
+%token                  TOK_COMMENT_TEXT
+%token                  TOK_KW_DATE           
+%token <std::string>    TOK_DATE_TEXT
+%token                  TOK_KW_ENDDEFINITIONS 
+%token                  TOK_KW_SCOPE          
+%token                  TOK_KW_TIMESCALE      
+%token                  TOK_KW_UPSCOPE        
+%token                  TOK_KW_VAR            
+%token                  TOK_KW_VERSION        
+%token <std::string>    TOK_VERSION_TEXT
+%token                  TOK_KW_DUMPALL        
+%token                  TOK_KW_DUMPOFF        
+%token                  TOK_KW_DUMPON         
+%token                  TOK_KW_DUMPVARS       
+%token <VCDScopeType>   TOK_KW_BEGIN          
+%token <VCDScopeType>   TOK_KW_FORK           
+%token <VCDScopeType>   TOK_KW_FUNCTION       
+%token <VCDScopeType>   TOK_KW_MODULE         
+%token <VCDScopeType>   TOK_KW_TASK           
+%token <VCDTimeRes>     TOK_TIME_NUMBER       
+%token <VCDTimeUnit>    TOK_TIME_UNIT         
+%token <VCDVarType>     TOK_VAR_TYPE          
+%token                  TOK_HASH              
+%token                  TOK_VALUE             
+%token                  TOK_BIN_NUM           
+%token                  TOK_BINARY_NUMBER     
+%token                  TOK_REAL_NUM          
+%token                  TOK_REAL_NUMBER       
+%token <std::string>    TOK_IDENTIFIER        
+%token                  TOK_DECIMAL_NUM       
+%token                  END  0 "end of file"
 
 %start input
 

@@ -9,6 +9,7 @@
 #include <climits>
 #include <cstdlib>
 #include <string>
+#include <cstring>
 
 #include "VCDFileParser.hpp"
 #include "VCDParser.hpp"
@@ -48,7 +49,24 @@ KW_MODULE           module
 KW_TASK             task
 TIME_NUMBER         1|10|100
 TIME_UNIT           s|ms|us|ns|ps|fs
-VAR_TYPE            event|integer|parameter|real|realtime|reg|supply0|supply1|time|tri|triand|trior|trireg|tri0|tri1|wand|wire|wor
+VAR_TYPE_EVENT      event
+VAR_TYPE_INTEGER    integer
+VAR_TYPE_PARAMETER  parameter
+VAR_TYPE_REAL       real
+VAR_TYPE_REALTIME   realtime
+VAR_TYPE_REG        reg
+VAR_TYPE_SUPPLY0    supply0
+VAR_TYPE_SUPPLY1    supply1
+VAR_TYPE_TIME       time
+VAR_TYPE_TRI        tri
+VAR_TYPE_TRIAND     triand
+VAR_TYPE_TRIOR      trior
+VAR_TYPE_TRIREG     trireg
+VAR_TYPE_TRI0       tri0
+VAR_TYPE_TRI1       tri1
+VAR_TYPE_WAND       wand
+VAR_TYPE_WIRE       wire
+VAR_TYPE_WOR        wor
 HASH                #
 SCALAR_NUM          0|1|x|X|z|Z       
 BIN_NUM             (b|B)(0|1|x|X|z|Z)+
@@ -113,7 +131,7 @@ VERSION_TEXT        [^("$end")]*
 
 <IN_DATE>{DATE_TEXT} {
     //std::cout << yytext << ", ";
-    return VCDParser::parser::make_TOK_DATE_TEXT(loc);
+    return VCDParser::parser::make_TOK_DATE_TEXT(std::string(yytext),loc);
 }
 
 {KW_VERSION} {
@@ -124,7 +142,7 @@ VERSION_TEXT        [^("$end")]*
 
 <IN_VERSION>{VERSION_TEXT} {
     //std::cout << yytext << ", ";
-    return VCDParser::parser::make_TOK_VERSION_TEXT(loc);
+    return VCDParser::parser::make_TOK_VERSION_TEXT(std::string(yytext),loc);
 }
 
 {KW_TIMESCALE} {
@@ -135,12 +153,26 @@ VERSION_TEXT        [^("$end")]*
 
 <IN_TIMESCALE>{TIME_NUMBER} {
     //std::cout << yytext << ", ";
-    return VCDParser::parser::make_TOK_TIME_NUMBER(loc);
+    return VCDParser::parser::make_TOK_TIME_NUMBER(std::atoi(yytext),loc);
 }
 
 <IN_TIMESCALE>{TIME_UNIT} {
     //std::cout << yytext << ", ";
-    return VCDParser::parser::make_TOK_TIME_UNIT(loc);
+    VCDTimeUnit tr = TIME_S;
+
+    if(std::strcmp(yytext, "s")) {
+        tr = TIME_S;
+    } else if(std::strcmp(yytext, "ms")) {
+        tr = TIME_MS;
+    } else if(std::strcmp(yytext, "us")) {
+        tr = TIME_US;
+    } else if(std::strcmp(yytext, "ns")) {
+        tr = TIME_NS;
+    } else if(std::strcmp(yytext, "ps")) {
+        tr = TIME_PS;
+    }
+
+    return VCDParser::parser::make_TOK_TIME_UNIT(tr,loc);
 }
 
 
@@ -152,32 +184,32 @@ VERSION_TEXT        [^("$end")]*
 
 <IN_SCOPE>{KW_BEGIN} {
     //std::cout << yytext << ", ";
-    return VCDParser::parser::make_TOK_KW_BEGIN(loc);
+    return VCDParser::parser::make_TOK_KW_BEGIN(VCD_SCOPE_BEGIN,loc);
 }
 
 <IN_SCOPE>{KW_FORK} {
     //std::cout << yytext << ", ";
-    return VCDParser::parser::make_TOK_KW_FORK(loc);
+    return VCDParser::parser::make_TOK_KW_FORK(VCD_SCOPE_FORK,loc);
 }
 
 <IN_SCOPE>{KW_FUNCTION} {
     //std::cout << yytext << ", ";
-    return VCDParser::parser::make_TOK_KW_FUNCTION(loc);
+    return VCDParser::parser::make_TOK_KW_FUNCTION(VCD_SCOPE_FUNCTION, loc);
 }
 
 <IN_SCOPE>{KW_MODULE} {
     //std::cout << yytext << ", ";
-    return VCDParser::parser::make_TOK_KW_MODULE(loc);
+    return VCDParser::parser::make_TOK_KW_MODULE(VCD_SCOPE_MODULE, loc);
 }
 
 <IN_SCOPE>{KW_TASK} {
     //std::cout << yytext << ", ";
-    return VCDParser::parser::make_TOK_KW_TASK(loc);
+    return VCDParser::parser::make_TOK_KW_TASK(VCD_SCOPE_TASK, loc);
 }
 
 <IN_SCOPE>{SCOPE_IDENTIFIER} {
     //std::cout << yytext << ", ";
-    return VCDParser::parser::make_TOK_IDENTIFIER(loc);
+    return VCDParser::parser::make_TOK_IDENTIFIER(std::string(yytext),loc);
 }
 
 {KW_UPSCOPE} {
@@ -196,10 +228,24 @@ VERSION_TEXT        [^("$end")]*
     return VCDParser::parser::make_TOK_KW_VAR(loc);
 }
 
-<IN_VAR>{VAR_TYPE} {
-    //std::cout << yytext << ", ";
-    return VCDParser::parser::make_TOK_VAR_TYPE(loc);
-}
+<IN_VAR>{VAR_TYPE_EVENT} {return VCDParser::parser::make_TOK_VAR_TYPE(VCD_VAR_EVENT    ,loc);}
+<IN_VAR>{VAR_TYPE_INTEGER} {return VCDParser::parser::make_TOK_VAR_TYPE(VCD_VAR_INTEGER  ,loc);}
+<IN_VAR>{VAR_TYPE_PARAMETER} {return VCDParser::parser::make_TOK_VAR_TYPE(VCD_VAR_PARAMETER,loc);}
+<IN_VAR>{VAR_TYPE_REAL} {return VCDParser::parser::make_TOK_VAR_TYPE(VCD_VAR_REAL     ,loc);}
+<IN_VAR>{VAR_TYPE_REALTIME} {return VCDParser::parser::make_TOK_VAR_TYPE(VCD_VAR_REALTIME ,loc);}
+<IN_VAR>{VAR_TYPE_REG} {return VCDParser::parser::make_TOK_VAR_TYPE(VCD_VAR_REG      ,loc);}
+<IN_VAR>{VAR_TYPE_SUPPLY0} {return VCDParser::parser::make_TOK_VAR_TYPE(VCD_VAR_SUPPLY0  ,loc);}
+<IN_VAR>{VAR_TYPE_SUPPLY1} {return VCDParser::parser::make_TOK_VAR_TYPE(VCD_VAR_SUPPLY1  ,loc);}
+<IN_VAR>{VAR_TYPE_TIME} {return VCDParser::parser::make_TOK_VAR_TYPE(VCD_VAR_TIME     ,loc);}
+<IN_VAR>{VAR_TYPE_TRI} {return VCDParser::parser::make_TOK_VAR_TYPE(VCD_VAR_TRI      ,loc);}
+<IN_VAR>{VAR_TYPE_TRIAND} {return VCDParser::parser::make_TOK_VAR_TYPE(VCD_VAR_TRIAND   ,loc);}
+<IN_VAR>{VAR_TYPE_TRIOR} {return VCDParser::parser::make_TOK_VAR_TYPE(VCD_VAR_TRIOR    ,loc);}
+<IN_VAR>{VAR_TYPE_TRIREG} {return VCDParser::parser::make_TOK_VAR_TYPE(VCD_VAR_TRIREG   ,loc);}
+<IN_VAR>{VAR_TYPE_TRI0} {return VCDParser::parser::make_TOK_VAR_TYPE(VCD_VAR_TRI0     ,loc);}
+<IN_VAR>{VAR_TYPE_TRI1} {return VCDParser::parser::make_TOK_VAR_TYPE(VCD_VAR_TRI1     ,loc);}
+<IN_VAR>{VAR_TYPE_WAND} {return VCDParser::parser::make_TOK_VAR_TYPE(VCD_VAR_WAND     ,loc);}
+<IN_VAR>{VAR_TYPE_WIRE} {return VCDParser::parser::make_TOK_VAR_TYPE(VCD_VAR_WIRE     ,loc);}
+<IN_VAR>{VAR_TYPE_WOR} {return VCDParser::parser::make_TOK_VAR_TYPE(VCD_VAR_WOR      ,loc);}
 
 <IN_VAR>{DECIMAL_NUM} {
     BEGIN(IN_VAR_PSIZE);
@@ -210,12 +256,12 @@ VERSION_TEXT        [^("$end")]*
 <IN_VAR_PSIZE>{IDENTIFIER_CODE} {
     BEGIN(IN_VAR_PID);
     //std::cout << yytext << ", ";
-    return VCDParser::parser::make_TOK_IDENTIFIER(loc);
+    return VCDParser::parser::make_TOK_IDENTIFIER(std::string(yytext),loc);
 }
 
 <IN_VAR_PID>{SCOPE_IDENTIFIER} {
     //std::cout << yytext << ", ";
-    return VCDParser::parser::make_TOK_IDENTIFIER(loc);
+    return VCDParser::parser::make_TOK_IDENTIFIER(std::string(yytext),loc);
 }
 
 <IN_VAR_PID>{BRACKET_O} {
@@ -296,7 +342,7 @@ VERSION_TEXT        [^("$end")]*
 <IN_VAL_IDCODE>{IDENTIFIER_CODE} {
     //std::cout << yytext << std::endl;
     BEGIN(INITIAL);
-    return VCDParser::parser::make_TOK_IDENTIFIER(loc);
+    return VCDParser::parser::make_TOK_IDENTIFIER(std::string(yytext),loc);
 }
 
 \t {loc.columns();}

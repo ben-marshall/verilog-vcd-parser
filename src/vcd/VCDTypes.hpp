@@ -23,6 +23,9 @@ typedef std::string VCDSignalHash;
 //! Represents a single instant in time in a trace
 typedef double VCDTime;
 
+//! Specifies the timing resoloution along with VCDTimeUnit
+typedef unsigned VCDTimeRes;
+
 //! Variable types of a signal in a VCD file.
 typedef enum {
     VCD_VAR_EVENT,
