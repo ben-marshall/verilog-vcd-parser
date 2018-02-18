@@ -1,5 +1,5 @@
 
-BUILD_DIR       ?= ../../build
+BUILD_DIR       ?= ../build
 
 LEX_SRC         ?= VCDScanner.l
 LEX_OUT         ?= $(BUILD_DIR)/VCDScanner.cpp
