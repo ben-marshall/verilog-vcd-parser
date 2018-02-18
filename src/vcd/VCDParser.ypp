@@ -175,7 +175,9 @@ scope_type :
 |   TOK_KW_TASK
 ;
 
-simulation_time : TOK_HASH TOK_DECIMAL_NUM
+simulation_time : TOK_HASH TOK_DECIMAL_NUM {
+    driver.fh -> times.push_back($2);
+}
 
 value_changes :
     value_change

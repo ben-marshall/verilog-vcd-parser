@@ -61,7 +61,10 @@ class VCDFile {
         std::vector<VCDSignal*> signals;
         
         //! Flat mao of all scope objects in the file, keyed by name.
-        std::vector<VCDScope*> scopes;
+        std::vector<VCDScope*>  scopes;
+
+        //! Vector of time values present in the VCD file - sorted, asc
+        std::vector<VCDTime>    times;
 };
 
 
