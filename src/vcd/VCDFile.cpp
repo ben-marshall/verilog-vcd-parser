@@ -27,6 +27,12 @@ void VCDFile::add_signal(
     VCDSignal * s
 ){
     this -> signals.push_back(s);
+
+    // Add a timestream entry
+    if(val_map.find(s -> hash) == val_map.end()) {
+        // Values will be populated later.
+        val_map[s -> hash] = new VCDSignalValues();
+    }
 }
 
 

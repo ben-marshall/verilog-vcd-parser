@@ -66,8 +66,8 @@ class VCDFile {
         //! Vector of time values present in the VCD file - sorted, asc
         std::vector<VCDTime>    times;
 
-        //! Map of hashes onto times onto values.
-        std::map<VCDSignalHash, std::map<VCDTime, VCDValue>> val_map;
+        //! Map of hashes onto vectors of times and signal values.
+        std::map<VCDSignalHash, VCDSignalValues*> val_map;
 };
 
 

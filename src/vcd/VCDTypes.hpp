@@ -1,5 +1,6 @@
 
 #include <map>
+#include <utility>
 #include <string>
 #include <vector>
 
@@ -31,6 +32,16 @@ typedef unsigned VCDSignalSize;
 
 //! Type over a VCD signal value.
 typedef unsigned VCDValue;
+
+//! A signal value tagged with times.
+typedef struct {
+    VCDTime     time;
+    VCDValue    value;
+} VCDTimedValue;
+
+//! A vector of tagged time/value pairs, sorted by time values.
+typedef std::vector<VCDTimedValue*> VCDSignalValues;
+
 
 //! Variable types of a signal in a VCD file.
 typedef enum {

@@ -192,15 +192,39 @@ value_change:
 |   vector_value_change
 
 scalar_value_change:  TOK_VALUE TOK_IDENTIFIER {
-    driver.fh -> val_map[$2][current_time] = 0;
+
+    VCDSignalHash   hash  = $2;
+    VCDTimedValue * toadd = new VCDTimedValue();
+    
+    toadd -> time   = current_time;
+    toadd -> value  = 0;
+
+    driver.fh -> val_map[hash] -> push_back(toadd);
+
 }
 
 vector_value_change: 
     TOK_BIN_NUM     TOK_IDENTIFIER {
-    driver.fh -> val_map[$2][current_time] = 0;
+
+    VCDSignalHash   hash  = $2;
+    VCDTimedValue * toadd = new VCDTimedValue();
+    
+    toadd -> time   = current_time;
+    toadd -> value  = 0;
+
+    driver.fh -> val_map[hash] -> push_back(toadd);
+
 }
 |   TOK_REAL_NUM    TOK_IDENTIFIER {
-    driver.fh -> val_map[$2][current_time] = 0;
+
+    VCDSignalHash   hash  = $2;
+    VCDTimedValue * toadd = new VCDTimedValue();
+    
+    toadd -> time   = current_time;
+    toadd -> value  = 0;
+
+    driver.fh -> val_map[hash] -> push_back(toadd);
+
 }
 
 reference:
