@@ -1,4 +1,6 @@
 
+#include <iostream>
+
 #include "VCDFile.hpp"
         
         
@@ -14,7 +16,17 @@ VCDFile::VCDFile(){
 void VCDFile::add_scope(
     VCDScope * s
 ){
+    this -> scopes.push_back(s);
+}
 
+
+/*!
+@brief Add a new signal object to the VCD file
+*/
+void VCDFile::add_signal(
+    VCDSignal * s
+){
+    this -> signals.push_back(s);
 }
 
 
@@ -24,8 +36,7 @@ void VCDFile::add_scope(
 VCDScope * VCDFile::get_scope(
     VCDScopeName name
 ){
-
-
+        return nullptr;
 }
 
 

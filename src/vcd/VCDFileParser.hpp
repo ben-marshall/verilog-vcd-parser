@@ -9,6 +9,7 @@
 #include <string>
 #include <map>
 #include <set>
+#include <stack>
 
 #include "VCDParser.hpp"
 #include "VCDTypes.hpp"
@@ -55,6 +56,9 @@ class VCDFileParser {
     
         //! Current file being parsed and constructed.
         VCDFile * fh;
+        
+        //! Current stack of scopes being parsed.
+        std::stack<VCDScope*> scopes;
         
     protected:
 

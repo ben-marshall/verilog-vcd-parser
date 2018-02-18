@@ -74,7 +74,7 @@
 %token                  TOK_REAL_NUM          
 %token                  TOK_REAL_NUMBER       
 %token <std::string>    TOK_IDENTIFIER        
-%token                  TOK_DECIMAL_NUM       
+%token <int>            TOK_DECIMAL_NUM       
 %token                  END  0 "end of file"
 
 %start input
@@ -110,14 +110,48 @@ declaration_command :
     driver.fh -> date = $2;
 }
 |   TOK_KW_ENDDEFINITIONS TOK_KW_END
-|   TOK_KW_SCOPE    scope_type TOK_IDENTIFIER TOK_KW_END
+|   TOK_KW_SCOPE    scope_type TOK_IDENTIFIER TOK_KW_END {
+    // PUSH the current scope stack.
+    
+    VCDScope * new_scope = new VCDScope();
+    new_scope -> name = $3;
+    new_scope -> type = $2;
+    new_scope -> parent = driver.scopes.top();
+    
+    driver.fh -> add_scope(
+        new_scope
+    );
+    
+    driver.scopes.top() -> children.push_back(new_scope);
+    driver.scopes.push(new_scope);
+
+}
 |   TOK_KW_TIMESCALE TOK_TIME_NUMBER TOK_TIME_UNIT TOK_KW_END {
     driver.fh -> time_resolution = $2;
     driver.fh -> time_units      = $3;
 }
-|   TOK_KW_UPSCOPE  TOK_KW_END
+|   TOK_KW_UPSCOPE  TOK_KW_END {
+    // POP the current scope stack.
+
+    driver.scopes.pop();
+
+}
 |   TOK_KW_VAR      TOK_VAR_TYPE TOK_DECIMAL_NUM TOK_IDENTIFIER reference 
-    TOK_KW_END
+    TOK_KW_END {
+    // Add this variable to the current scope.
+
+    VCDSignal * new_signal  = new VCDSignal();
+    new_signal -> type      = $2;
+    new_signal -> size      = $3;
+    new_signal -> hash      = $4;
+    new_signal -> reference = $5;
+
+    VCDScope * scope = driver.scopes.top();
+    scope -> signals.push_back(new_signal);
+
+    driver.fh -> add_signal(new_signal);
+
+}
 |   TOK_KW_VERSION  version_text TOK_KW_END {
     driver.fh -> version = $2;
 }

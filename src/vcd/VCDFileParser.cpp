@@ -26,11 +26,21 @@ VCDFile * VCDFileParser::parse_file(const std::string &filepath) {
     this -> fh = new VCDFile();
     VCDFile * tr = this -> fh;
 
+    this -> fh -> root_scope = new VCDScope;
+    this -> fh -> root_scope -> name = std::string("$root");
+    this -> fh -> root_scope -> type = VCD_SCOPE_ROOT;
+    
+    this -> scopes.push(this -> fh -> root_scope);
+    
+    tr -> add_scope(scopes.top());
+
     VCDParser::parser parser(*this);
 
     parser.set_debug_level(trace_parsing);
 
     int result = parser.parse();
+    
+    scopes.pop();
 
     scan_end();
 
@@ -75,8 +85,9 @@ int main (int argc, char** argv){
 
     if(result) {
         std::cout << "Parse successful." << std::endl;
-        std::cout << "Version: " << result -> version << std::endl;
-        std::cout << "Date:    " << result -> date << std::endl;
+        std::cout << "Version:      " << result -> version << std::endl;
+        std::cout << "Date:         " << result -> date << std::endl;
+        std::cout << "Signal count: " << result -> signals.size() << std::endl;
 
         delete result;
         

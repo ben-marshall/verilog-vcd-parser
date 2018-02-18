@@ -25,6 +25,13 @@ class VCDFile {
         void add_scope(
             VCDScope * s
         );
+
+        /*!
+        @brief Add a new signal to the VCD file
+        */
+        void add_signal(
+            VCDSignal * s
+        );
     
 
         /*!
@@ -47,16 +54,14 @@ class VCDFile {
         //! Version string of the simulator which generated the VCD.
         std::string version;
 
-    protected:
-
         //! Root scope node of the VCD signals
         VCDScope * root_scope;
         
-        //! Flat mao of all scope objects in the file, keyed by name.
-        std::map<VCDScopeName,VCDScope*> scopes;
-        
         //! Flat vector of all signals in the file.
         std::vector<VCDSignal*> signals;
+        
+        //! Flat mao of all scope objects in the file, keyed by name.
+        std::vector<VCDScope*> scopes;
 };
 
 

@@ -250,7 +250,7 @@ VERSION_TEXT        [^("$")]*
 <IN_VAR>{DECIMAL_NUM} {
     BEGIN(IN_VAR_PSIZE);
     //std::cout << yytext << ", ";
-    return VCDParser::parser::make_TOK_DECIMAL_NUM(loc);
+    return VCDParser::parser::make_TOK_DECIMAL_NUM(std::atoi(yytext),loc);
 }
 
 <IN_VAR_PSIZE>{IDENTIFIER_CODE} {
@@ -272,7 +272,7 @@ VERSION_TEXT        [^("$")]*
 
 <IN_VAR_RNG>{DECIMAL_NUM} {
     //std::cout << yytext << ", ";
-    return VCDParser::parser::make_TOK_DECIMAL_NUM(loc);
+    return VCDParser::parser::make_TOK_DECIMAL_NUM(std::atoi(yytext),loc);
 }
 
 <IN_VAR_RNG>{COLON} {
@@ -294,7 +294,7 @@ VERSION_TEXT        [^("$")]*
 <IN_SIMTIME>{DECIMAL_NUM} {
     BEGIN(INITIAL);
     //std::cout << yytext << std::endl;
-    return VCDParser::parser::make_TOK_DECIMAL_NUM(loc);
+    return VCDParser::parser::make_TOK_DECIMAL_NUM(std::atoi(yytext),loc);
 }
 
 {KW_DUMPALL} {

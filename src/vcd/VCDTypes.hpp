@@ -26,6 +26,9 @@ typedef double VCDTime;
 //! Specifies the timing resoloution along with VCDTimeUnit
 typedef unsigned VCDTimeRes;
 
+//! Width in bits of a signal.
+typedef unsigned VCDSignalSize;
+
 //! Variable types of a signal in a VCD file.
 typedef enum {
     VCD_VAR_EVENT,
@@ -65,7 +68,8 @@ typedef enum {
     VCD_SCOPE_FORK,
     VCD_SCOPE_FUNCTION,
     VCD_SCOPE_MODULE,
-    VCD_SCOPE_TASK
+    VCD_SCOPE_TASK,
+    VCD_SCOPE_ROOT
 } VCDScopeType;
 
 
@@ -77,6 +81,8 @@ typedef struct {
     VCDSignalHash       hash;
     VCDSignalReference  reference;
     VCDScope          * scope;
+    VCDSignalSize       size;
+    VCDVarType          type;
 } VCDSignal;
 
 
