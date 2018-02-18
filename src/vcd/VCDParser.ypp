@@ -17,6 +17,9 @@
     #include <string>
     #include <map>
 
+    #include "VCDTypes.hpp"
+    #include "VCDFile.hpp"
+
     class VCDFileParser;
 }
 
