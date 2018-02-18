@@ -11,6 +11,8 @@
 #include <set>
 
 #include "VCDParser.hpp"
+#include "VCDTypes.hpp"
+#include "VCDFile.hpp"
 
 #define YY_DECL \
     VCDParser::parser::symbol_type yylex (VCDFileParser & driver)
@@ -31,9 +33,10 @@ class VCDFileParser {
         
         /*!
         @brief Parse the suppled file.
-        @returns 0 if everything was parsed okay. Nonzero otherwise.
+        @returns A handle to the parsed VCDFile object or nullptr if parsing
+        fails.
         */
-        int parse_file(const std::string & filepath);
+        VCDFile * parse_file(const std::string & filepath);
         
         //! The current file being parsed.
         std::string filepath;
@@ -49,6 +52,9 @@ class VCDFileParser {
 
         //! Reports errors to stderr.
         void error(const std::string & m);
+    
+        //! Current file being parsed and constructed.
+        VCDFile * fh;
         
     protected:
 

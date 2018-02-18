@@ -11,6 +11,8 @@ YAC_OUT         ?= $(BUILD_DIR)/VCDParser.cpp
 YAC_HEADER      ?= $(BUILD_DIR)/VCDParser.hpp
 YAC_OBJ         ?= $(BUILD_DIR)/VCDParser.o
 
+VCD_SRC         ?= VCDFile.cpp
+
 CXXFLAGS        += -I$(BUILD_DIR) -I./
 
 TEST_FILE       ?= VCDFileParser.cpp
@@ -24,7 +26,7 @@ $(YAC_OUT) : $(YAC_SRC)
 $(LEX_OUT) : $(LEX_SRC) $(YAC_OUT)
 	flex  -P VCDParser --header-file=$(LEX_HEADER) -o $(LEX_OUT) $(LEX_SRC)
 
-$(TEST_APP) : $(TEST_FILE) $(LEX_OBJ) $(YAC_OBJ)
+$(TEST_APP) : $(TEST_FILE) $(VCD_SRC) $(LEX_OBJ) $(YAC_OBJ)
 	$(CXX) $(CXXFLAGS) -o $@ $^ -DVCD_PARSER_STANDALONE
 
 clean:

@@ -16,11 +16,15 @@ VCDFileParser::~VCDFileParser() {
 
 }
 
-int VCDFileParser::parse_file(const std::string &filepath) {
+
+VCDFile * VCDFileParser::parse_file(const std::string &filepath) {
 
     this -> filepath = filepath;
     
     scan_begin();
+
+    this -> fh = new VCDFile();
+    VCDFile * tr = this -> fh;
 
     VCDParser::parser parser(*this);
 
@@ -30,7 +34,14 @@ int VCDFileParser::parse_file(const std::string &filepath) {
 
     scan_end();
 
-    return result;
+    if (result == 0 ) {
+        this -> fh = nullptr;
+        return tr;
+    } else {
+        tr = nullptr;
+        delete this -> fh;
+        return nullptr;
+    }
 
 }
         
@@ -60,9 +71,17 @@ int main (int argc, char** argv){
 
     VCDFileParser parser;
 
-    int result = parser.parse_file(infile);
+    VCDFile * result = parser.parse_file(infile);
 
-    return result;
+    if(result) {
+        std::cout << "Parse successful." << std::endl;
+        delete result;
+        
+        return 0;
+    } else {
+        std::cout << "Parse Failed." << std::endl;
+        return 1;
+    }
 }
 
 
