@@ -33,6 +33,13 @@ class VCDValue {
         VCDValue    (
             VCDReal value
         );
+
+
+        ~VCDValue () {
+            if(this -> type == VCD_VECTOR) {
+                delete this -> value.val_vector;
+            }
+        }
         
 
         //! Return the type of value stored by this class instance.

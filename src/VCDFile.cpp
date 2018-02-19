@@ -8,6 +8,39 @@
 VCDFile::VCDFile(){
 
 }
+        
+//! Destructor
+VCDFile::~VCDFile(){
+
+    // Delete signals and scopes.
+
+    for (VCDScope * scope : this -> scopes) {
+    
+        for (VCDSignal * signal : scope -> signals) {
+            delete signal;
+        }
+        
+        delete scope;
+    }
+
+    // Delete signal values.
+    
+    for(auto hash_val = this -> val_map.begin();
+             hash_val != this -> val_map.end();
+             ++hash_val)
+    {
+        for(auto vals = hash_val -> second -> begin();
+                 vals != hash_val -> second -> end();
+                 ++vals)
+        {
+            delete (*vals) -> value;
+            delete *vals;
+        }
+
+        delete hash_val -> second;
+    }
+
+}
 
 
 /*!

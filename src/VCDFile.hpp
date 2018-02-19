@@ -20,6 +20,9 @@ class VCDFile {
         //! Instance a new VCD file container.
         VCDFile();
         
+        //! Destructor
+        ~VCDFile();
+        
         //! Timescale of the VCD file.
         VCDTimeUnit time_units;
 
