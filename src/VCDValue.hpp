@@ -53,7 +53,7 @@ class VCDValue {
         //! The type of value this instance stores.
         VCDValueType    type;
         
-        //! The actual value stored, as identified by <type>.
+        //! The actual value stored, as identified by type.
         union valstore {
             VCDBit         val_bit;   //!< Value as a bit
             VCDBitVector * val_vector;//!< Value as a bit vector

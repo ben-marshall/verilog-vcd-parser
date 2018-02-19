@@ -71,10 +71,10 @@ VCDTime current_time = 0;
 %token <VCDTimeUnit>    TOK_TIME_UNIT         
 %token <VCDVarType>     TOK_VAR_TYPE          
 %token                  TOK_HASH              
-%token                  TOK_VALUE             
-%token                  TOK_BIN_NUM           
+%token <VCDBit>         TOK_VALUE             
+%token <std::string>    TOK_BIN_NUM           
 %token                  TOK_BINARY_NUMBER     
-%token                  TOK_REAL_NUM          
+%token <std::string>    TOK_REAL_NUM          
 %token                  TOK_REAL_NUMBER       
 %token <std::string>    TOK_IDENTIFIER        
 %token <int>            TOK_DECIMAL_NUM       
@@ -197,7 +197,7 @@ scalar_value_change:  TOK_VALUE TOK_IDENTIFIER {
     VCDTimedValue * toadd = new VCDTimedValue();
     
     toadd -> time   = current_time;
-    toadd -> value  = new VCDValue(VCD_0);
+    toadd -> value  = new VCDValue($1);
 
     driver.fh -> add_signal_value(toadd, hash);
 
@@ -211,7 +211,33 @@ vector_value_change:
     VCDTimedValue * toadd = new VCDTimedValue();
     
     toadd -> time   = current_time;
-    toadd -> value  = 0;
+
+    VCDBitVector * vec = new VCDBitVector();
+    VCDValue * val = new VCDValue(vec);
+
+    for(int i =1; i < $1.size(); i ++) {
+        switch($1[i]) {
+            case '0':
+                vec -> push_back(VCD_0);
+                break;
+            case '1':
+                vec -> push_back(VCD_1);
+                break;
+            case 'x':
+            case 'X':
+                vec -> push_back(VCD_X);
+                break;
+            case 'z':
+            case 'Z':
+                vec -> push_back(VCD_Z);
+                break;
+            default:
+                vec -> push_back(VCD_X);
+                break;
+        }
+    }
+
+    toadd -> value = val;
 
     driver.fh -> add_signal_value(toadd, hash);
 
@@ -224,6 +250,15 @@ vector_value_change:
     toadd -> time   = current_time;
     toadd -> value  = 0;
 
+    VCDValue * val;
+    VCDReal real_value;
+    
+    // Legal way of parsing dumped floats according to the spec.
+    // Sec 21.7.2.1, paragraph 4.
+    const char * buffer = $1.c_str() + 1;
+    std::scanf(buffer, "%g", &real_value);
+    
+    toadd -> value = new VCDValue(real_value);
     driver.fh -> add_signal_value(toadd, hash);
 }
 

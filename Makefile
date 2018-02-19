@@ -14,7 +14,7 @@ YAC_OUT         ?= $(BUILD_DIR)/VCDParser.cpp
 YAC_HEADER      ?= $(BUILD_DIR)/VCDParser.hpp
 YAC_OBJ         ?= $(BUILD_DIR)/VCDParser.o
 
-CXXFLAGS        += -I$(BUILD_DIR) -I$(SRC_DIR)
+CXXFLAGS        += -I$(BUILD_DIR) -I$(SRC_DIR) -g
 
 VCD_SRC         ?= $(SRC_DIR)/VCDFile.cpp \
                    $(SRC_DIR)/VCDValue.cpp \

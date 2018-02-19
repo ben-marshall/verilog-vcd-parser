@@ -10,6 +10,7 @@
 #include <cstdlib>
 #include <string>
 #include <cstring>
+#include <cstdio>
 
 #include "VCDFileParser.hpp"
 #include "VCDParser.hpp"
@@ -324,19 +325,42 @@ VERSION_TEXT        [^("$")]*
 <IN_VAL_CHANGES,INITIAL>{SCALAR_NUM} {
     //std::cout << yytext << ", ";
     BEGIN(IN_VAL_IDCODE);
-    return VCDParser::parser::make_TOK_VALUE(loc);
+
+    VCDBit val;
+
+    switch(yytext[0]) {
+        case '0':
+            val = VCD_0;
+            break;
+        case '1':
+            val = VCD_1;
+            break;
+        case 'x':
+        case 'X':
+            val = VCD_X;
+            break;
+        case 'z':
+        case 'Z':
+            val = VCD_Z;
+            break;
+        default:
+            val = VCD_X;
+            break;
+    }
+
+    return VCDParser::parser::make_TOK_VALUE(val, loc);
 }
 
 <IN_VAL_CHANGES,INITIAL>{BIN_NUM} {
     //std::cout << yytext << ", ";
     BEGIN(IN_VAL_IDCODE);
-    return VCDParser::parser::make_TOK_BIN_NUM(loc);
+    return VCDParser::parser::make_TOK_BIN_NUM(std::string(yytext), loc);
 }
 
 <IN_VAL_CHANGES,INITIAL>{REAL_NUM} {
     //std::cout << yytext << ", ";
     BEGIN(IN_VAL_IDCODE);
-    return VCDParser::parser::make_TOK_REAL_NUM(loc);
+    return VCDParser::parser::make_TOK_REAL_NUM(std::string(yytext), loc);
 }
 
 <IN_VAL_IDCODE>{IDENTIFIER_CODE} {
