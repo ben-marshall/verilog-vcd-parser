@@ -1,6 +1,8 @@
 
 # Verilog VCD Parser
 
+[![Documentation](https://codedocs.xyz/ben-marshall/verilog-vcd-parser.svg)](https://codedocs.xyz/ben-marshall/verilog-vcd-parser/)
+
 This project implements a no-frills *Value Change Dump* (VCD) file parser, as
 described in the IEEE System Verilog 1800-2012 standard. It can be used to
 write custom tools which need to read signal traces dumped out by Verilog (or
