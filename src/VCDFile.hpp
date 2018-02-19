@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "VCDTypes.hpp"
+#include "VCDValue.hpp"
 
 #ifndef VCDFile_HPP
 #define VCDFile_HPP

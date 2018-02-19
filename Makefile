@@ -14,11 +14,12 @@ YAC_OUT         ?= $(BUILD_DIR)/VCDParser.cpp
 YAC_HEADER      ?= $(BUILD_DIR)/VCDParser.hpp
 YAC_OBJ         ?= $(BUILD_DIR)/VCDParser.o
 
-VCD_SRC         ?= $(SRC_DIR)/VCDFile.cpp
-
 CXXFLAGS        += -I$(BUILD_DIR) -I$(SRC_DIR)
 
-TEST_FILE       ?= $(SRC_DIR)/VCDFileParser.cpp
+VCD_SRC         ?= $(SRC_DIR)/VCDFile.cpp \
+                   $(SRC_DIR)/VCDValue.cpp \
+                   $(SRC_DIR)/VCDFileParser.cpp
+
 TEST_APP        ?= $(BUILD_DIR)/vcd-parse
 
 all : vcd-parser docs

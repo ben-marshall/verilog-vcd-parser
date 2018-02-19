@@ -30,14 +30,39 @@ typedef unsigned VCDTimeRes;
 //! Width in bits of a signal.
 typedef unsigned VCDSignalSize;
 
-//! Type over a VCD signal value.
-typedef unsigned VCDValue;
+//! Represents the four-state signal values of a VCD file.
+typedef enum {
+    VCD_0 = 0,  //!< Logic zero
+    VCD_1 = 1,  //!< Logic one
+    VCD_X = 2,  //!< Unknown / Undefined
+    VCD_Z = 3   //!< High Impedence.
+} VCDBit;
+
+//! A vector of VCDBit values.
+typedef std::vector<VCDBit> VCDBitVector;
+
+//! Typedef to identify a real number as stored in a VCD.
+typedef double VCDReal;
+
+
+//! Describes how a signal value is represented in the VCD trace.
+typedef enum {
+    VCD_SCALAR, //!< Single VCDBit
+    VCD_VECTOR, //!< Vector of VCDBit
+    VCD_REAL    //!< IEEE Floating point (64bit).
+} VCDValueType;
+
+
+// Forward declaration of class.
+class VCDValue;
+
 
 //! A signal value tagged with times.
 typedef struct {
     VCDTime     time;
-    VCDValue    value;
+    VCDValue  * value;
 } VCDTimedValue;
+
 
 //! A vector of tagged time/value pairs, sorted by time values.
 typedef std::vector<VCDTimedValue*> VCDSignalValues;

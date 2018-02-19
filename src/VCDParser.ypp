@@ -197,7 +197,7 @@ scalar_value_change:  TOK_VALUE TOK_IDENTIFIER {
     VCDTimedValue * toadd = new VCDTimedValue();
     
     toadd -> time   = current_time;
-    toadd -> value  = 0;
+    toadd -> value  = new VCDValue(VCD_0);
 
     driver.fh -> add_signal_value(toadd, hash);
 
