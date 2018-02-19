@@ -2,6 +2,8 @@
 SRC_DIR         ?= ./src
 BUILD_DIR       ?= ./build
 
+DOCS_CFG        ?= .doxygen
+
 LEX_SRC         ?= $(SRC_DIR)/VCDScanner.l
 LEX_OUT         ?= $(BUILD_DIR)/VCDScanner.cpp
 LEX_HEADER      ?= $(BUILD_DIR)/VCDScanner.hpp
@@ -19,9 +21,12 @@ CXXFLAGS        += -I$(BUILD_DIR) -I$(SRC_DIR)
 TEST_FILE       ?= $(SRC_DIR)/VCDFileParser.cpp
 TEST_APP        ?= $(BUILD_DIR)/vcd-parse
 
-all : $(YAC_OUT) $(LEX_OUT) $(TEST_APP)
+all : vcd-parser docs
 
 vcd-parser: $(TEST_APP)
+
+docs: $(DOCS_CFG) $(VCD_SRC) $(TEST_FILE)
+	doxygen $(DOCS_CFG)
 
 $(YAC_OUT) : $(YAC_SRC)
 	bison -v --defines=$(YAC_HEADER) $(YAC_SRC) -o $(YAC_OUT)
