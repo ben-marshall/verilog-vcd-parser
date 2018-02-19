@@ -118,3 +118,34 @@ void VCDFile::add_timestamp(
     this -> times.push_back(time);
 }
 
+/*!
+*/
+VCDValue * VCDFile::get_signal_value_at (
+    VCDSignalHash hash,
+    VCDTime       time
+){
+    if(this -> val_map.find(hash) == this -> val_map.end()) {
+        return nullptr;
+    }
+    
+    VCDSignalValues * vals = this -> val_map[hash];
+
+    if(vals -> size() == 0) {
+        return nullptr;
+    }
+
+    VCDValue * tr = nullptr;
+
+    for(auto it = vals -> begin();
+             it != vals -> end();
+             ++ it) {
+
+        if((*it) -> time <= time) {
+            tr = (*it) -> value;
+        } else {
+            break;
+        }
+    }
+
+    return tr;
+}

@@ -26,6 +26,8 @@ all : vcd-parser docs
 
 vcd-parser: $(TEST_APP)
 
+parser-srcs: $(YAC_OUT) $(LEX_OUT)
+
 docs: $(DOCS_CFG) $(VCD_SRC) $(TEST_FILE)
 	doxygen $(DOCS_CFG)
 

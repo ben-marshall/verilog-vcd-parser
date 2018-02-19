@@ -81,16 +81,35 @@ int main (int argc, char** argv){
 
     VCDFileParser parser;
 
-    VCDFile * result = parser.parse_file(infile);
+    VCDFile * trace = parser.parse_file(infile);
 
-    if(result) {
+    if(trace) {
         std::cout << "Parse successful." << std::endl;
-        std::cout << "Version:       " << result -> version << std::endl;
-        std::cout << "Date:          " << result -> date << std::endl;
-        std::cout << "Signal count:  " << result -> get_signals() -> size() <<std::endl;
-        std::cout << "Times Recorded:" << result -> get_timestamps() -> size() << std::endl;
+        std::cout << "Version:       " << trace -> version << std::endl;
+        std::cout << "Date:          " << trace -> date << std::endl;
+        std::cout << "Signal count:  " << trace -> get_signals() -> size() <<std::endl;
+        std::cout << "Times Recorded:" << trace -> get_timestamps() -> size() << std::endl;
+    
+        // Print out every signal in every scope.
+        for(VCDScope * scope : *trace -> get_scopes()) {
 
-        delete result;
+            std::cout << "Scope: "  << scope ->  name  << std::endl;
+
+            for(VCDSignal * signal : scope -> signals) {
+
+                std::cout << "\t" << signal -> hash << "\t" 
+                          << signal -> reference;
+
+                if(signal -> size > 1) {
+                    std::cout << " [" << signal -> size << ":0]";
+                }
+                
+                std::cout << std::endl;
+
+            }
+        }
+
+        delete trace;
         
         return 0;
     } else {

@@ -11,6 +11,22 @@ IEEE floating point number.
 */
 class VCDValue {
 
+
+    //! Convert a VCDBit to a single char
+    static char VCDBit2Char(VCDBit b) {
+        switch(b) {
+            case(VCD_0):
+                return '0';
+            case(VCD_1):
+                return '1';
+            case(VCD_Z):
+                return 'Z';
+            case(VCD_X):
+            default:
+                return 'X';
+        }
+    }
+
     public:
         
         /*!

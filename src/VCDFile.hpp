@@ -84,6 +84,21 @@ class VCDFile {
             VCDTimedValue * time_val,
             VCDSignalHash   hash
         );
+        
+
+        /*!
+        @brief Get the value of a particular signal at a specified time.
+        @note The supplied time value does not need to exist in the
+        vector returned by get_timestamps().
+        @param hash in - The hashcode for the signal to identify it.
+        @param time in - The time at which we want the value of the signal.
+        @returns A pointer to the value at the supplie time, or nullptr if
+        no such record can be found.
+        */
+        VCDValue * get_signal_value_at (
+            VCDSignalHash hash,
+            VCDTime       time
+        );
 
         
         /*!

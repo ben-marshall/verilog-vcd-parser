@@ -38,6 +38,7 @@ typedef enum {
     VCD_Z = 3   //!< High Impedence.
 } VCDBit;
 
+
 //! A vector of VCDBit values.
 typedef std::vector<VCDBit> VCDBitVector;
 
