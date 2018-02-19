@@ -36,6 +36,7 @@ class VCDFile {
 
         /*!
         @brief Add a new scope object to the VCD file
+        @param s in - The VCDScope object to add to the VCD file.
         */
         void add_scope(
             VCDScope * s
@@ -43,6 +44,7 @@ class VCDFile {
 
         /*!
         @brief Add a new signal to the VCD file
+        @param s in - The VCDSignal object to add to the VCD file.
         */
         void add_signal(
             VCDSignal * s
@@ -53,6 +55,7 @@ class VCDFile {
         @brief Add a new timestamp value to the VCD file.
         @details Add a time stamp to the sorted array of existing
         timestamps in the file.
+        @param time in - The timestamp value to add to the file.
         */
         void add_timestamp(
             VCDTime time
@@ -61,6 +64,7 @@ class VCDFile {
 
         /*!
         @brief Return the scope object in the VCD file with this name
+        @param name in - The name of the scope to get and return.
         */
         VCDScope * get_scope(
             VCDScopeName name
@@ -69,6 +73,8 @@ class VCDFile {
 
         /*!
         @brief Add a new signal value to the VCD file, tagged by time.
+        @param time_val in - A signal value, tagged by the time it occurs.
+        @param hash in - The VCD hash value representing the signal.
         */
         void add_signal_value(
             VCDTimedValue * time_val,
