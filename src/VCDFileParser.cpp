@@ -87,8 +87,8 @@ int main (int argc, char** argv){
         std::cout << "Parse successful." << std::endl;
         std::cout << "Version:       " << result -> version << std::endl;
         std::cout << "Date:          " << result -> date << std::endl;
-        std::cout << "Signal count:  " << result -> signals.size() <<std::endl;
-        std::cout << "Times Recorded:" << result -> times.size() << std::endl;
+        std::cout << "Signal count:  " << result -> get_signals() -> size() <<std::endl;
+        std::cout << "Times Recorded:" << result -> get_timestamps() -> size() << std::endl;
 
         delete result;
         

@@ -18,30 +18,7 @@ class VCDFile {
         
         //! Instance a new VCD file container.
         VCDFile();
-
-        /*!
-        @brief Add a new scope object to the VCD file
-        */
-        void add_scope(
-            VCDScope * s
-        );
-
-        /*!
-        @brief Add a new signal to the VCD file
-        */
-        void add_signal(
-            VCDSignal * s
-        );
-    
-
-        /*!
-        @brief Return the scope object in the VCD file with this name
-        */
-        VCDScope * get_scope(
-            VCDScopeName name
-        );
         
-
         //! Timescale of the VCD file.
         VCDTimeUnit time_units;
 
@@ -56,6 +33,66 @@ class VCDFile {
 
         //! Root scope node of the VCD signals
         VCDScope * root_scope;
+
+        /*!
+        @brief Add a new scope object to the VCD file
+        */
+        void add_scope(
+            VCDScope * s
+        );
+
+        /*!
+        @brief Add a new signal to the VCD file
+        */
+        void add_signal(
+            VCDSignal * s
+        );
+
+
+        /*!
+        @brief Add a new timestamp value to the VCD file.
+        @details Add a time stamp to the sorted array of existing
+        timestamps in the file.
+        */
+        void add_timestamp(
+            VCDTime time
+        );
+    
+
+        /*!
+        @brief Return the scope object in the VCD file with this name
+        */
+        VCDScope * get_scope(
+            VCDScopeName name
+        );
+
+
+        /*!
+        @brief Add a new signal value to the VCD file, tagged by time.
+        */
+        void add_signal_value(
+            VCDTimedValue * time_val,
+            VCDSignalHash   hash
+        );
+
+        
+        /*!
+        @brief Return a pointer to the set of timestamp samples present in
+               the VCD file.
+        */
+        std::vector<VCDTime>* get_timestamps();
+        
+        /*!
+        @brief Get a vector of all scopes present in the file.
+        */
+        std::vector<VCDScope*>* get_scopes();
+        
+        /*!
+        @brief Return a flattened vector of all signals in the file.
+        */
+        std::vector<VCDSignal*>* get_signals();
+
+    protected:
         
         //! Flat vector of all signals in the file.
         std::vector<VCDSignal*> signals;

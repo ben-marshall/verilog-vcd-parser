@@ -180,7 +180,7 @@ scope_type :
 
 simulation_time : TOK_HASH TOK_DECIMAL_NUM {
     current_time =  $2;
-    driver.fh    -> times.push_back($2);
+    driver.fh    -> add_timestamp($2);
 }
 
 value_changes :
@@ -199,9 +199,10 @@ scalar_value_change:  TOK_VALUE TOK_IDENTIFIER {
     toadd -> time   = current_time;
     toadd -> value  = 0;
 
-    driver.fh -> val_map[hash] -> push_back(toadd);
+    driver.fh -> add_signal_value(toadd, hash);
 
 }
+
 
 vector_value_change: 
     TOK_BIN_NUM     TOK_IDENTIFIER {
@@ -212,7 +213,7 @@ vector_value_change:
     toadd -> time   = current_time;
     toadd -> value  = 0;
 
-    driver.fh -> val_map[hash] -> push_back(toadd);
+    driver.fh -> add_signal_value(toadd, hash);
 
 }
 |   TOK_REAL_NUM    TOK_IDENTIFIER {
@@ -223,8 +224,7 @@ vector_value_change:
     toadd -> time   = current_time;
     toadd -> value  = 0;
 
-    driver.fh -> val_map[hash] -> push_back(toadd);
-
+    driver.fh -> add_signal_value(toadd, hash);
 }
 
 reference:

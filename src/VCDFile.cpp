@@ -37,7 +37,6 @@ void VCDFile::add_signal(
 
 
 /*!
-@brief Return the scope object in the VCD file with this name
 */
 VCDScope * VCDFile::get_scope(
     VCDScopeName name
@@ -45,4 +44,44 @@ VCDScope * VCDFile::get_scope(
         return nullptr;
 }
 
+
+/*!
+@brief Add a new signal value to the VCD file, tagged by time.
+*/
+void VCDFile::add_signal_value(
+    VCDTimedValue * time_val,
+    VCDSignalHash   hash
+){
+    this -> val_map[hash] -> push_back(time_val);
+}
+
+
+/*!
+*/
+std::vector<VCDTime>* VCDFile::get_timestamps(){
+    return &this -> times;
+}
+
+
+/*!
+*/
+std::vector<VCDScope*>* VCDFile::get_scopes(){
+    return &this -> scopes;
+}
+
+
+/*!
+*/
+std::vector<VCDSignal*>* VCDFile::get_signals(){
+    return &this -> signals;
+}
+
+
+/*!
+*/
+void VCDFile::add_timestamp(
+    VCDTime time
+){
+    this -> times.push_back(time);
+}
 
