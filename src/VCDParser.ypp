@@ -150,7 +150,7 @@ declaration_command :
     if (new_signal->size == 1) {
         assert((new_signal->lindex == -1) || (new_signal->rindex == -1));
     } else {
-        assert((new_signal->lindex > 0) && (new_signal->lindex > new_signal->rindex));
+        assert((new_signal->lindex > 0) && (new_signal->lindex - new_signal->rindex + 1 == new_signal->size));
     }
     VCDScope * scope = driver.scopes.top();
     scope -> signals.push_back(new_signal);
