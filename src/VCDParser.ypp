@@ -85,7 +85,7 @@ VCDTime current_time = 0;
 %type <std::string>     comment_text
 %type <std::string>     version_text 
 %type <std::string>     date_text
-%type <std::string>     reference
+%type <VCDSignal*>      reference
 %type <VCDScopeType>    scope_type
 
 %%
@@ -143,12 +143,15 @@ declaration_command :
     TOK_KW_END {
     // Add this variable to the current scope.
 
-    VCDSignal * new_signal  = new VCDSignal();
+    VCDSignal * new_signal  = $5;
     new_signal -> type      = $2;
     new_signal -> size      = $3;
     new_signal -> hash      = $4;
-    new_signal -> reference = $5;
-
+    if (new_signal->size == 1) {
+        assert((new_signal->lindex == -1) || (new_signal->rindex == -1));
+    } else {
+        assert((new_signal->lindex > 0) && (new_signal->lindex > new_signal->rindex));
+    }
     VCDScope * scope = driver.scopes.top();
     scope -> signals.push_back(new_signal);
 
@@ -264,19 +267,23 @@ vector_value_change:
 
 reference:
     TOK_IDENTIFIER {
-    $$ = $1;
+    $$  = new VCDSignal();
+    $$ -> reference = $1;
+    $$ -> lindex = -1;
+    $$ -> rindex = -1;
 }
 |   TOK_IDENTIFIER TOK_BRACKET_O TOK_DECIMAL_NUM TOK_BRACKET_C{
-    $$ = $1;
-    $$.append("[");
-    $$.append("]");
+    $$  = new VCDSignal();
+    $$ -> reference = $1;
+    $$ -> lindex = $3;
+    $$ -> rindex = -1;
 }
 |   TOK_IDENTIFIER TOK_BRACKET_O TOK_DECIMAL_NUM TOK_COLON TOK_DECIMAL_NUM
     TOK_BRACKET_C{
-    $$ = $1;
-    $$.append("[");
-    $$.append(":");
-    $$.append("]");
+    $$  = new VCDSignal();
+    $$ -> reference = $1;
+    $$ -> lindex = $3;
+    $$ -> rindex = $5;
 }
 
 comment_text :

@@ -101,7 +101,9 @@ int main (int argc, char** argv){
                           << signal -> reference;
 
                 if(signal -> size > 1) {
-                    std::cout << " [" << signal -> size << ":0]";
+                    std::cout << "[" << signal -> lindex << ":" << signal -> rindex << "]";
+                } else if (signal -> lindex >= 0) {
+                    std::cout << "[" << signal -> lindex << "]";
                 }
                 
                 std::cout << std::endl;
