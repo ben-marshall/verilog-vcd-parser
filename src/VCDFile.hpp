@@ -35,6 +35,9 @@ class VCDFile {
         //! Version string of the simulator which generated the VCD.
         std::string version;
 
+        //! Version string of the simulator which generated the VCD.
+        std::string comment;
+
         //! Root scope node of the VCD signals
         VCDScope * root_scope;
 

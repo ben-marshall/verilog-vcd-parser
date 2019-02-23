@@ -108,7 +108,9 @@ simulation_commands:
 ;
 
 declaration_command :
-    TOK_KW_COMMENT  comment_text     TOK_KW_END
+    TOK_KW_COMMENT  comment_text     TOK_KW_END {
+    driver.fh -> comment = $2;
+}
 |   TOK_KW_DATE     date_text        TOK_KW_END {
     driver.fh -> date = $2;
 }
