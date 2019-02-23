@@ -82,7 +82,7 @@ int main (int argc, char** argv)
         traverse_scope(std::string(""), trace->root_scope, instances, fullpath);
 
         if (result["toggles"].as<bool>()) {
-            std::cout << "T.B.D!" >> std::endl;
+            std::cout << "T.B.D!" << std::endl;
         }
         delete trace;
         
