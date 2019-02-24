@@ -9,6 +9,8 @@ VCDFileParser::VCDFileParser() {
 
     this -> trace_scanning = false;
     this -> trace_parsing  = false;
+    this -> start_time = -std::numeric_limits<decltype(start_time)>::max();
+    this -> end_time = std::numeric_limits<decltype(end_time)>::max() ;
 
 }
 

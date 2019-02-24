@@ -185,7 +185,10 @@ scope_type :
 
 simulation_time : TOK_HASH TOK_DECIMAL_NUM {
     current_time =  $2;
-    driver.fh    -> add_timestamp($2);
+    if (current_time > driver.end_time)
+        YYACCEPT;
+    if (current_time > driver.start_time)
+        driver.fh    -> add_timestamp($2);
 }
 
 value_changes :
@@ -199,12 +202,14 @@ value_change:
 scalar_value_change:  TOK_VALUE TOK_IDENTIFIER {
 
     VCDSignalHash   hash  = $2;
-    VCDTimedValue * toadd = new VCDTimedValue();
-    
-    toadd -> time   = current_time;
-    toadd -> value  = new VCDValue($1);
+    if (current_time > driver.start_time) {
+        VCDTimedValue * toadd = new VCDTimedValue();
 
-    driver.fh -> add_signal_value(toadd, hash);
+        toadd -> time   = current_time;
+        toadd -> value  = new VCDValue($1);
+
+        driver.fh -> add_signal_value(toadd, hash);
+    }
 
 }
 

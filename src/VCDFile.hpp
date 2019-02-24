@@ -103,6 +103,14 @@ class VCDFile {
             VCDTime       time
         );
 
+        /*!
+        @brief Get a vector of VCD time values
+        @param hash in - The hashcode for the signal to identify it.
+        @returns A pointer to the vector of time values, or nullptr if hash not found
+        */
+        VCDSignalValues * get_signal_values (
+            VCDSignalHash hash
+        );
         
         /*!
         @brief Return a pointer to the set of timestamp samples present in
