@@ -1,4 +1,22 @@
 
+# VCD Tools
+This is a multipurpose utility for handling VCD files.  
+It started as a fork of the excellent Verilog VCD Parser, therefore keeping its original README file below.  
+
+## Features
+* Display full path of signals contained within th VCD file.
+* Display the list of scopes within the VCD file.
+* Display VCD file header
+* Display number of toggles for each signal
+* Restrict VCD file to a range of timestamps
+
+## TODO
+* Export VCD file (useful for producing a cut-down VCD file)
+* Filter some signals/scopes (useful for the VCD export)
+
+Please see below for the original Verilog VCD Parser README.md file:
+
+---
 # Verilog VCD Parser
 
 [![Documentation](https://codedocs.xyz/ben-marshall/verilog-vcd-parser.svg)](https://codedocs.xyz/ben-marshall/verilog-vcd-parser/)
