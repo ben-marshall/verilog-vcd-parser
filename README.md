@@ -132,6 +132,16 @@ build/VCDScanner.cpp
 
 With header files located in both `src/` and `build/`.
 
+## Integration using static link library
+
+`build/libverilog-vcd-parser.a` and the required .hpp files are copied into `build/`.
+
+To use these from another application add -I and the .a file to your gcc command line:
+
+```sh
+$ gcc -Ibuild/ build/libverilog-vcd-parser.a myapp.cpp
+```
+
 
 ## Tools
 
