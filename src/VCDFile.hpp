@@ -92,12 +92,14 @@ class VCDFile {
         vector returned by get_timestamps().
         @param hash in - The hashcode for the signal to identify it.
         @param time in - The time at which we want the value of the signal.
+        @param erase_prior in - Erase signals prior to this time. Avoids O(n^2) searching times when scanning large .vcd files sequentially.
         @returns A pointer to the value at the supplie time, or nullptr if
         no such record can be found.
         */
         VCDValue * get_signal_value_at (
             VCDSignalHash hash,
-            VCDTime       time
+            VCDTime       time,
+            bool erase_prior = false
         );
 
         
