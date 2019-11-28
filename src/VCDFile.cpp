@@ -124,15 +124,16 @@ void VCDFile::add_timestamp(
 /*!
 */
 VCDValue * VCDFile::get_signal_value_at (
-    VCDSignalHash hash,
+    const VCDSignalHash& hash,
     VCDTime       time,
     bool erase_prior
 ){
-    if(this -> val_map.find(hash) == this -> val_map.end()) {
+    auto find = val_map.find(hash); 
+    if(find == this -> val_map.end()) {
         return nullptr;
     }
     
-    VCDSignalValues * vals = this -> val_map[hash];
+    VCDSignalValues * vals = find->second;
 
     if(vals -> size() == 0) {
         return nullptr;

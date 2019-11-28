@@ -97,7 +97,7 @@ class VCDFile {
         no such record can be found.
         */
         VCDValue * get_signal_value_at (
-            VCDSignalHash hash,
+            const VCDSignalHash& hash,
             VCDTime       time,
             bool erase_prior = false
         );
