@@ -3,6 +3,7 @@
 #include <utility>
 #include <string>
 #include <vector>
+#include <deque>
 
 /*!
 @file VCDTypes.hpp
@@ -66,7 +67,7 @@ typedef struct {
 
 
 //! A vector of tagged time/value pairs, sorted by time values.
-typedef std::vector<VCDTimedValue*> VCDSignalValues;
+typedef std::deque<VCDTimedValue*> VCDSignalValues;
 
 
 //! Variable types of a signal in a VCD file.

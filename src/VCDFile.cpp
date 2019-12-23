@@ -124,18 +124,22 @@ void VCDFile::add_timestamp(
 /*!
 */
 VCDValue * VCDFile::get_signal_value_at (
-    VCDSignalHash hash,
-    VCDTime       time
+    const VCDSignalHash& hash,
+    VCDTime       time,
+    bool erase_prior
 ){
-    if(this -> val_map.find(hash) == this -> val_map.end()) {
+    auto find = val_map.find(hash); 
+    if(find == this -> val_map.end()) {
         return nullptr;
     }
     
-    VCDSignalValues * vals = this -> val_map[hash];
+    VCDSignalValues * vals = find->second;
 
     if(vals -> size() == 0) {
         return nullptr;
     }
+
+    VCDSignalValues::iterator erase_until = vals->begin();
 
     VCDValue * tr = nullptr;
 
@@ -144,10 +148,19 @@ VCDValue * VCDFile::get_signal_value_at (
              ++ it) {
 
         if((*it) -> time <= time) {
+            erase_until = it;
             tr = (*it) -> value;
         } else {
             break;
         }
+    }
+
+    if (erase_prior) {
+        // avoid O(n^2) performance for large sequential scans
+        for (auto i = vals->begin() ; i != erase_until; i++) {
+            delete (*i) -> value;
+        }
+        vals->erase(vals->begin(), erase_until);
     }
 
     return tr;
