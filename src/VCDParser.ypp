@@ -283,39 +283,27 @@ reference:
 
 comment_text :
     %empty  {
-    $$ = std::string("");
+    $$ = std::string();
 }
 |   TOK_COMMENT_TEXT {
     $$ = std::string($1);
 }
-|   comment_text TOK_COMMENT_TEXT{
-    $$ = $1;
-    $$.append($2);
-}
 
 version_text :
     %empty{
-    $$ = std::string("");
+    $$ = std::string();
 }
 |   TOK_VERSION_TEXT {
     $$ = std::string($1);
-}
-|   version_text TOK_VERSION_TEXT {
-    $$ = $1;
-    $$.append($2);
 }
 
 
 date_text:
     %empty{
-    $$ = std::string("");
+    $$ = std::string();
 }
 |   TOK_DATE_TEXT {
     $$ = std::string($1);
-}
-|   date_text TOK_DATE_TEXT {
-    $$ = $1;
-    $$.append($2);
 }
 
 %%
