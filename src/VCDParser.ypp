@@ -256,7 +256,9 @@ vector_value_change:
     // Legal way of parsing dumped floats according to the spec.
     // Sec 21.7.2.1, paragraph 4.
     const char * buffer = $1.c_str() + 1;
-    std::scanf(buffer, "%g", &real_value);
+    float tmp;
+    std::sscanf(buffer, "%g", &tmp);
+    real_value = tmp;
     
     toadd -> value = new VCDValue(real_value);
     driver.fh -> add_signal_value(toadd, hash);

@@ -71,7 +71,9 @@ VAR_TYPE_WOR        wor
 HASH                #
 SCALAR_NUM          0|1|x|X|z|Z       
 BIN_NUM             (b|B)(0|1|x|X|z|Z)+
-REAL_NUM            (r|r)(0-9)+[\.(0.9)+]
+FIXED_POINT_NUMBER  {DECIMAL_NUM}\.{DECIMAL_NUM}
+FLOAT_POINT_NUMBER  {DECIMAL_NUM}(\.{DECIMAL_NUM})?(e|E)(\+|-)?{DECIMAL_NUM}
+REAL_NUM            (r|R)({FLOAT_POINT_NUMBER}|{FIXED_POINT_NUMBER})
 IDENTIFIER_CODE     [a-zA-Z_0-9!/\,\.@':~#\*\(\)\+\{\}\$\%\[\]`\"&;<>=\?\-\^\(\)\|\\]+
 SCOPE_IDENTIFIER    [a-zA-Z_][a-zA-Z_0-9!/\,\.@':~#\*\(\)\+\{\}\$\%\[\]`\"&;<>=\?\-\^\(\)\|\\]*
 DECIMAL_NUM         [0-9]+
