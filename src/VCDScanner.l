@@ -284,6 +284,7 @@ VERSION_TEXT        {COMMENT_TEXT}
 }
 
 <IN_VAR_RNG>{BRACKET_C} {
+    BEGIN(IN_VAR_PID);
     //std::cout << yytext << ", ";
     return VCDParser::parser::make_TOK_BRACKET_C(loc);
 }

@@ -271,13 +271,16 @@ reference:
 |   TOK_IDENTIFIER TOK_BRACKET_O TOK_DECIMAL_NUM TOK_BRACKET_C{
     $$ = $1;
     $$.append("[");
+    $$.append(std::to_string($3));
     $$.append("]");
 }
 |   TOK_IDENTIFIER TOK_BRACKET_O TOK_DECIMAL_NUM TOK_COLON TOK_DECIMAL_NUM
     TOK_BRACKET_C{
     $$ = $1;
     $$.append("[");
+    $$.append(std::to_string($3));
     $$.append(":");
+    $$.append(std::to_string($5));
     $$.append("]");
 }
 
