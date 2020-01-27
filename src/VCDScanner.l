@@ -78,7 +78,8 @@ IDENTIFIER_CODE     {GRAPHICAL_ASCII_CHAR}+
 SCOPE_IDENTIFIER    [a-zA-Z_]{GRAPHICAL_ASCII_CHAR}*
 DECIMAL_NUM         [0-9]+
 
-TEXT                [^("$")]*
+TEXT1               [^$]*
+TEXT2               $[^(end)]
 
 %x IN_TEXT
 %x IN_TIMESCALE
@@ -90,6 +91,7 @@ TEXT                [^("$")]*
 %x IN_SIMTIME
 %x IN_VAL_CHANGES
 %x IN_VAL_IDCODE
+%x IN_END
 
 %{
 #define YY_USER_ACTION loc.columns(yyleng);
@@ -106,7 +108,7 @@ TEXT                [^("$")]*
     return VCDParser::parser::make_TOK_KW_END(loc);
 }
 
-<IN_VAL_IDCODE,IN_VAR,IN_VAR_PID,IN_VAR_RNG,IN_TEXT,IN_TIMESCALE,IN_SCOPE>{KW_END} {
+<IN_VAL_IDCODE,IN_VAR,IN_VAR_PID,IN_VAR_RNG,IN_TIMESCALE,IN_SCOPE,IN_END>{KW_END} {
     BEGIN(INITIAL);
     return VCDParser::parser::make_TOK_KW_END(loc);
 }
@@ -129,9 +131,20 @@ TEXT                [^("$")]*
     return VCDParser::parser::make_TOK_KW_VERSION(loc);
 }
 
-<IN_TEXT>{TEXT} {
+<IN_TEXT>{TEXT1} {
+    yymore();
+}
+
+<IN_TEXT>{TEXT2} {
+    yymore();
+}
+
+<IN_TEXT>{KW_END} {
+    BEGIN(IN_END);
     //std::cout << yytext << ", ";
-    return VCDParser::parser::make_TOK_TEXT(std::string(yytext),loc);
+    unsigned len = strlen(yytext) - 4;
+    yyless(len);
+    return VCDParser::parser::make_TOK_TEXT(std::string(yytext, len),loc);
 }
 
 {KW_TIMESCALE} {
