@@ -48,16 +48,14 @@ VCDTime current_time = 0;
 %token                  TOK_DOLLAR            
 %token                  TOK_KW_END            
 %token                  TOK_KW_COMMENT        
-%token <std::string>    TOK_COMMENT_TEXT
+%token <std::string>    TOK_TEXT
 %token                  TOK_KW_DATE           
-%token <std::string>    TOK_DATE_TEXT
 %token                  TOK_KW_ENDDEFINITIONS 
 %token                  TOK_KW_SCOPE          
 %token                  TOK_KW_TIMESCALE      
 %token                  TOK_KW_UPSCOPE        
 %token                  TOK_KW_VAR            
 %token                  TOK_KW_VERSION        
-%token <std::string>    TOK_VERSION_TEXT
 %token                  TOK_KW_DUMPALL        
 %token                  TOK_KW_DUMPOFF        
 %token                  TOK_KW_DUMPON         
@@ -82,9 +80,7 @@ VCDTime current_time = 0;
 
 %start input
 
-%type <std::string>     comment_text
-%type <std::string>     version_text 
-%type <std::string>     date_text
+%type <std::string>     text
 %type <std::string>     reference
 %type <VCDScopeType>    scope_type
 
@@ -108,8 +104,8 @@ simulation_commands:
 ;
 
 declaration_command :
-    TOK_KW_COMMENT  comment_text     TOK_KW_END
-|   TOK_KW_DATE     date_text        TOK_KW_END {
+    TOK_KW_COMMENT  text     TOK_KW_END
+|   TOK_KW_DATE     text     TOK_KW_END {
     driver.fh -> date = $2;
 }
 |   TOK_KW_ENDDEFINITIONS TOK_KW_END
@@ -155,7 +151,7 @@ declaration_command :
     driver.fh -> add_signal(new_signal);
 
 }
-|   TOK_KW_VERSION  version_text TOK_KW_END {
+|   TOK_KW_VERSION  text TOK_KW_END {
     driver.fh -> version = $2;
 }
 ;
@@ -284,28 +280,11 @@ reference:
     $$.append("]");
 }
 
-comment_text :
+text :
     %empty  {
-    $$ = std::string();
+    $$.clear();
 }
-|   TOK_COMMENT_TEXT {
-    $$ = std::string($1);
-}
-
-version_text :
-    %empty{
-    $$ = std::string();
-}
-|   TOK_VERSION_TEXT {
-    $$ = std::string($1);
-}
-
-
-date_text:
-    %empty{
-    $$ = std::string();
-}
-|   TOK_DATE_TEXT {
+|   TOK_TEXT {
     $$ = std::string($1);
 }
 

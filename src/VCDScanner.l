@@ -78,13 +78,9 @@ IDENTIFIER_CODE     {GRAPHICAL_ASCII_CHAR}+
 SCOPE_IDENTIFIER    [a-zA-Z_]{GRAPHICAL_ASCII_CHAR}*
 DECIMAL_NUM         [0-9]+
 
-COMMENT_TEXT        [^("$")]*
-DATE_TEXT           {COMMENT_TEXT}
-VERSION_TEXT        {COMMENT_TEXT}
+TEXT                [^("$")]*
 
-%x IN_COMMENT
-%x IN_DATE
-%x IN_VERSION
+%x IN_TEXT
 %x IN_TIMESCALE
 %x IN_SCOPE
 %x IN_VAR
@@ -110,42 +106,32 @@ VERSION_TEXT        {COMMENT_TEXT}
     return VCDParser::parser::make_TOK_KW_END(loc);
 }
 
-<IN_VAL_IDCODE,IN_VAR,IN_VAR_PID,IN_VAR_RNG,IN_VERSION,IN_DATE,IN_COMMENT,IN_TIMESCALE,IN_SCOPE>{KW_END} {
+<IN_VAL_IDCODE,IN_VAR,IN_VAR_PID,IN_VAR_RNG,IN_TEXT,IN_TIMESCALE,IN_SCOPE>{KW_END} {
     BEGIN(INITIAL);
     return VCDParser::parser::make_TOK_KW_END(loc);
 }
 
 {KW_COMMENT} {
-    BEGIN(IN_COMMENT);
+    BEGIN(IN_TEXT);
     //std::cout << yytext << ", ";
     return VCDParser::parser::make_TOK_KW_COMMENT(loc);
 }
 
-<IN_COMMENT>{COMMENT_TEXT} {
-    //std::cout << yytext << ", ";
-    return VCDParser::parser::make_TOK_COMMENT_TEXT(std::string(yytext),loc);
-}
-
 {KW_DATE} {
-    BEGIN(IN_DATE);
+    BEGIN(IN_TEXT);
     //std::cout << yytext << ", ";
     return VCDParser::parser::make_TOK_KW_DATE(loc);
 }
 
-<IN_DATE>{DATE_TEXT} {
-    //std::cout << yytext << ", ";
-    return VCDParser::parser::make_TOK_DATE_TEXT(std::string(yytext),loc);
-}
-
 {KW_VERSION} {
-    BEGIN(IN_VERSION);
+    BEGIN(IN_TEXT);
     //std::cout << yytext << ", ";
     return VCDParser::parser::make_TOK_KW_VERSION(loc);
 }
 
-<IN_VERSION>{VERSION_TEXT} {
+<IN_TEXT>{TEXT} {
     //std::cout << yytext << ", ";
-    return VCDParser::parser::make_TOK_VERSION_TEXT(std::string(yytext),loc);
+    return VCDParser::parser::make_TOK_TEXT(std::string(yytext),loc);
 }
 
 {KW_TIMESCALE} {
