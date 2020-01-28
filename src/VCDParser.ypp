@@ -42,10 +42,7 @@ VCDTime current_time = 0;
 
 }
 
-%token                  TOK_BRACKET_O         
-%token                  TOK_BRACKET_C         
-%token                  TOK_COLON             
-%token                  TOK_DOLLAR            
+%token <std::string>    TOK_REFERENCE                     
 %token                  TOK_KW_END            
 %token                  TOK_KW_COMMENT        
 %token <std::string>    TOK_TEXT
@@ -60,29 +57,21 @@ VCDTime current_time = 0;
 %token                  TOK_KW_DUMPOFF        
 %token                  TOK_KW_DUMPON         
 %token                  TOK_KW_DUMPVARS       
-%token <VCDScopeType>   TOK_KW_BEGIN          
-%token <VCDScopeType>   TOK_KW_FORK           
-%token <VCDScopeType>   TOK_KW_FUNCTION       
-%token <VCDScopeType>   TOK_KW_MODULE         
-%token <VCDScopeType>   TOK_KW_TASK           
+%token <VCDScopeType>   TOK_KW_SCOPE_TYPE          
 %token <VCDTimeRes>     TOK_TIME_NUMBER       
 %token <VCDTimeUnit>    TOK_TIME_UNIT         
-%token <VCDVarType>     TOK_VAR_TYPE          
-%token                  TOK_HASH              
+%token <VCDVarType>     TOK_VAR_TYPE                    
 %token <VCDBit>         TOK_VALUE             
 %token <std::string>    TOK_BIN_NUM           
 %token                  TOK_BINARY_NUMBER     
-%token <std::string>    TOK_REAL_NUM          
-%token                  TOK_REAL_NUMBER       
+%token <float>          TOK_REAL_NUM             
 %token <std::string>    TOK_IDENTIFIER        
-%token <int>            TOK_DECIMAL_NUM       
+%token <int>            TOK_DECIMAL_NUM
+%token <int>            TOK_SIMULATION_TIME    
+%token                  TOK_UNUDENTIFIED_SYMBOL   
 %token                  END  0 "end of file"
 
 %start input
-
-%type <std::string>     text
-%type <std::string>     reference
-%type <VCDScopeType>    scope_type
 
 %%
 
@@ -104,12 +93,12 @@ simulation_commands:
 ;
 
 declaration_command :
-    TOK_KW_COMMENT  text     TOK_KW_END
-|   TOK_KW_DATE     text     TOK_KW_END {
+    TOK_KW_COMMENT  TOK_TEXT     TOK_KW_END
+|   TOK_KW_DATE     TOK_TEXT     TOK_KW_END {
     driver.fh -> date = $2;
 }
 |   TOK_KW_ENDDEFINITIONS TOK_KW_END
-|   TOK_KW_SCOPE    scope_type TOK_IDENTIFIER TOK_KW_END {
+|   TOK_KW_SCOPE    TOK_KW_SCOPE_TYPE TOK_IDENTIFIER TOK_KW_END {
     // PUSH the current scope stack.
     
     VCDScope * new_scope = new VCDScope();
@@ -135,7 +124,7 @@ declaration_command :
     driver.scopes.pop();
 
 }
-|   TOK_KW_VAR      TOK_VAR_TYPE TOK_DECIMAL_NUM TOK_IDENTIFIER reference 
+|   TOK_KW_VAR      TOK_VAR_TYPE TOK_DECIMAL_NUM TOK_IDENTIFIER TOK_REFERENCE 
     TOK_KW_END {
     // Add this variable to the current scope.
 
@@ -151,7 +140,7 @@ declaration_command :
     driver.fh -> add_signal(new_signal);
 
 }
-|   TOK_KW_VERSION  text TOK_KW_END {
+|   TOK_KW_VERSION  TOK_TEXT TOK_KW_END {
     driver.fh -> version = $2;
 }
 ;
@@ -166,17 +155,9 @@ simulation_command :
 |   value_change
 ;
 
-scope_type :
-    TOK_KW_BEGIN
-|   TOK_KW_FORK
-|   TOK_KW_FUNCTION
-|   TOK_KW_MODULE
-|   TOK_KW_TASK
-;
-
-simulation_time : TOK_HASH TOK_DECIMAL_NUM {
-    current_time =  $2;
-    driver.fh    -> add_timestamp($2);
+simulation_time : TOK_SIMULATION_TIME {
+    current_time =  $1;
+    driver.fh    -> add_timestamp($1);
 }
 
 value_changes :
@@ -244,48 +225,8 @@ vector_value_change:
     VCDTimedValue * toadd = new VCDTimedValue();
     
     toadd -> time   = current_time;
-    toadd -> value  = 0;
-
-    VCDValue * val;
-    VCDReal real_value;
-    
-    // Legal way of parsing dumped floats according to the spec.
-    // Sec 21.7.2.1, paragraph 4.
-    const char * buffer = $1.c_str() + 1;
-    float tmp;
-    std::sscanf(buffer, "%g", &tmp);
-    real_value = tmp;
-    
-    toadd -> value = new VCDValue(real_value);
+    toadd -> value = new VCDValue($1);
     driver.fh -> add_signal_value(toadd, hash);
-}
-
-reference:
-    TOK_IDENTIFIER {
-    $$ = $1;
-}
-|   TOK_IDENTIFIER TOK_BRACKET_O TOK_DECIMAL_NUM TOK_BRACKET_C{
-    $$ = $1;
-    $$.append("[");
-    $$.append(std::to_string($3));
-    $$.append("]");
-}
-|   TOK_IDENTIFIER TOK_BRACKET_O TOK_DECIMAL_NUM TOK_COLON TOK_DECIMAL_NUM
-    TOK_BRACKET_C{
-    $$ = $1;
-    $$.append("[");
-    $$.append(std::to_string($3));
-    $$.append(":");
-    $$.append(std::to_string($5));
-    $$.append("]");
-}
-
-text :
-    %empty  {
-    $$.clear();
-}
-|   TOK_TEXT {
-    $$ = std::string($1);
 }
 
 %%

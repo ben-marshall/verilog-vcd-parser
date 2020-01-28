@@ -5,34 +5,34 @@
 
 #include "VCDFileParser.hpp"
 
-VCDFileParser::VCDFileParser()
+#include <cerrno>
+#include <cstdio>
+#include <cstring>
+
+VCDFileParser::VCDFileParser() : trace_scanning(false), trace_parsing(false) {}
+
+VCDFileParser::~VCDFileParser() {}
+
+VCDFile *VCDFileParser::parse_file(const std::string &filep)
 {
-
-    this->trace_scanning = false;
-    this->trace_parsing = false;
-}
-
-VCDFileParser::~VCDFileParser()
-{
-}
-
-VCDFile *VCDFileParser::parse_file(const std::string &filepath)
-{
-
-    this->filepath = filepath;
-
+    error_str.clear();
+    filepath = filep;
+    file = fopen(filepath.c_str(), "r");
+    if (!file) {
+      error("Cannot open " + filepath + ": " + strerror(errno));
+      return nullptr;
+    }
     scan_begin();
 
-    this->fh = new VCDFile();
-    VCDFile *tr = this->fh;
+    fh = new VCDFile();
 
-    this->fh->root_scope = new VCDScope;
-    this->fh->root_scope->name = std::string("$root");
-    this->fh->root_scope->type = VCD_SCOPE_ROOT;
+    fh->root_scope = new VCDScope;
+    fh->root_scope->name = std::string("$root");
+    fh->root_scope->type = VCD_SCOPE_ROOT;
 
-    this->scopes.push(this->fh->root_scope);
+    scopes.push(fh->root_scope);
 
-    tr->add_scope(scopes.top());
+    fh->add_scope(scopes.top());
 
     VCDParser::parser parser(*this);
 
@@ -43,28 +43,28 @@ VCDFile *VCDFileParser::parse_file(const std::string &filepath)
     scopes.pop();
 
     scan_end();
+    fclose(file);
 
     if (result == 0)
     {
-        this->fh = nullptr;
-        return tr;
+        VCDFile* tmp = fh;
+        fh = nullptr;
+        return tmp;
     }
     else
     {
-        tr = nullptr;
-        delete this->fh;
+        delete fh;
+        fh = nullptr;
         return nullptr;
     }
 }
 
 void VCDFileParser::error(const VCDParser::location &l, const std::string &m)
 {
-    std::cerr << "line " << l.begin.line
-              << std::endl;
-    std::cerr << " : " << m << std::endl;
+    error("line "+std::to_string(l.begin.line)+" : "+m);
 }
 
 void VCDFileParser::error(const std::string &m)
 {
-    std::cerr << " : " << m << std::endl;
+    error_str = m;
 }

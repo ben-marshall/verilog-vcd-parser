@@ -39,9 +39,14 @@ class VCDFileParser {
         */
         VCDFile * parse_file(const std::string & filepath);
         
-        //! The current file being parsed.
+        //! The current filepath being parsed.
         std::string filepath;
-        
+
+        //! The current file being parsed.
+        FILE* file;
+
+        std::string error_str;
+
         //! Should we debug tokenising?
         bool trace_scanning;
 
