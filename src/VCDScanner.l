@@ -21,7 +21,7 @@
 #define yyterminate() return VCDParser::parser::make_END(loc)
 
 static VCDParser::location loc;
-    
+
 %}
 
 %option noyywrap nounput batch debug noinput
@@ -392,12 +392,11 @@ void VCDFileParser::scan_begin() {
         yyin = stdin;
     }
     else if(!(yyin = fopen(filepath.c_str(), "r"))) {
-        error("Cannot open "+filepath+": "+strerror(errno));
-        exit(EXIT_FAILURE);
+        throw std::runtime_error(
+            std::string("Cannot open ") + filepath + ": " + strerror(errno) );
     }
 }
 
 void VCDFileParser::scan_end() {
     fclose(yyin);
-    yypop_buffer_state();
 }
