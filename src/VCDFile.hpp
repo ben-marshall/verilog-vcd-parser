@@ -42,17 +42,13 @@ class VCDFile {
         @brief Add a new scope object to the VCD file
         @param s in - The VCDScope object to add to the VCD file.
         */
-        void add_scope(
-            VCDScope * s
-        );
+        void add_scope(VCDScope * s);
 
         /*!
         @brief Add a new signal to the VCD file
         @param s in - The VCDSignal object to add to the VCD file.
         */
-        void add_signal(
-            VCDSignal * s
-        );
+        void add_signal(VCDSignal * s);
 
 
         /*!
@@ -61,18 +57,14 @@ class VCDFile {
         timestamps in the file.
         @param time in - The timestamp value to add to the file.
         */
-        void add_timestamp(
-            VCDTime time
-        );
+        void add_timestamp(VCDTime time);
     
 
         /*!
         @brief Return the scope object in the VCD file with this name
         @param name in - The name of the scope to get and return.
         */
-        VCDScope * get_scope(
-            VCDScopeName name
-        );
+        VCDScope * get_scope(VCDScopeName name);
 
 
         /*!
@@ -80,10 +72,7 @@ class VCDFile {
         @param time_val in - A signal value, tagged by the time it occurs.
         @param hash in - The VCD hash value representing the signal.
         */
-        void add_signal_value(
-            VCDTimedValue * time_val,
-            VCDSignalHash   hash
-        );
+        void add_signal_value(VCDTimedValue&& time_val, VCDSignalHash   hash);
         
 
         /*!
@@ -96,11 +85,8 @@ class VCDFile {
         @returns A pointer to the value at the supplie time, or nullptr if
         no such record can be found.
         */
-        VCDValue * get_signal_value_at (
-            const VCDSignalHash& hash,
-            VCDTime       time,
-            bool erase_prior = false
-        );
+        VCDValue * get_signal_value_at (const VCDSignalHash& hash, VCDTime time,
+            bool erase_prior = false);
 
         
         /*!
@@ -122,16 +108,18 @@ class VCDFile {
     protected:
         
         //! Flat vector of all signals in the file.
+        // what the fuck is this pointer for?
         std::vector<VCDSignal*> signals;
         
         //! Flat mao of all scope objects in the file, keyed by name.
+        // what the fuck is this pointer for?
         std::vector<VCDScope*>  scopes;
 
         //! Vector of time values present in the VCD file - sorted, asc
         std::vector<VCDTime>    times;
 
         //! Map of hashes onto vectors of times and signal values.
-        std::map<VCDSignalHash, VCDSignalValues*> val_map;
+        std::map<VCDSignalHash, VCDSignalValues> val_map;
 };
 
 

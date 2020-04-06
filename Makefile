@@ -14,7 +14,8 @@ YAC_OUT         ?= $(BUILD_DIR)/VCDParser.cpp
 YAC_HEADER      ?= $(BUILD_DIR)/VCDParser.hpp
 YAC_OBJ         ?= $(BUILD_DIR)/VCDParser.o
 
-CXXFLAGS        += -I$(BUILD_DIR) -I$(SRC_DIR) -g -std=c++0x
+# -fPIC if one wants to use it in a library (say, Python module)
+CXXFLAGS        += -I$(BUILD_DIR) -I$(SRC_DIR) -g -O3 -std=c++17 -DNDEBUG -fPIC
 
 VCD_SRC         ?= $(SRC_DIR)/VCDFile.cpp \
                    $(SRC_DIR)/VCDValue.cpp \

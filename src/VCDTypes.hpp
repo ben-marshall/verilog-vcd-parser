@@ -1,4 +1,3 @@
-
 #include <map>
 #include <utility>
 #include <string>
@@ -56,18 +55,7 @@ typedef enum {
 
 
 // Forward declaration of class.
-class VCDValue;
-
-
-//! A signal value tagged with times.
-typedef struct {
-    VCDTime     time;
-    VCDValue  * value;
-} VCDTimedValue;
-
-
-//! A vector of tagged time/value pairs, sorted by time values.
-typedef std::deque<VCDTimedValue*> VCDSignalValues;
+//class VCDValue;
 
 
 //! Variable types of a signal in a VCD file.
@@ -135,6 +123,5 @@ struct vcdscope {
     std::vector<VCDScope*>    children; //!< Child scope objects.
     std::vector<VCDSignal*>   signals;  //!< Signals in this scope.
 };
-
 
 #endif

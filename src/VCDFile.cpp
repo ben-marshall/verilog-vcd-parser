@@ -1,19 +1,17 @@
 
 #include <iostream>
+#include <cassert>
 
 #include "VCDFile.hpp"
-        
+
         
 //! Instance a new VCD file container.
 VCDFile::VCDFile(){
-
 }
         
 //! Destructor
 VCDFile::~VCDFile(){
-
     // Delete signals and scopes.
-
     for (VCDScope * scope : this -> scopes) {
     
         for (VCDSignal * signal : scope -> signals) {
@@ -22,49 +20,27 @@ VCDFile::~VCDFile(){
         
         delete scope;
     }
-
-    // Delete signal values.
-    
-    for(auto hash_val = this -> val_map.begin();
-             hash_val != this -> val_map.end();
-             ++hash_val)
-    {
-        for(auto vals = hash_val -> second -> begin();
-                 vals != hash_val -> second -> end();
-                 ++vals)
-        {
-            delete (*vals) -> value;
-            delete *vals;
-        }
-
-        delete hash_val -> second;
-    }
-
 }
 
 
 /*!
 @brief Add a new scope object to the VCD file
 */
-void VCDFile::add_scope(
-    VCDScope * s
-){
-    this -> scopes.push_back(s);
+void VCDFile::add_scope(VCDScope * s){
+    scopes.push_back(s);
 }
 
 
 /*!
 @brief Add a new signal object to the VCD file
 */
-void VCDFile::add_signal(
-    VCDSignal * s
-){
-    this -> signals.push_back(s);
+void VCDFile::add_signal(VCDSignal * s){
+    signals.push_back(s);
 
     // Add a timestream entry
-    if(val_map.find(s -> hash) == val_map.end()) {
+    if(val_map.find(s->hash) == val_map.end()) {
         // Values will be populated later.
-        val_map[s -> hash] = new VCDSignalValues();
+        val_map[s -> hash] = VCDSignalValues();
     }
 }
 
@@ -85,24 +61,26 @@ VCDScope *VCDFile::get_scope(VCDScopeName name) {
 @brief Add a new signal value to the VCD file, tagged by time.
 */
 void VCDFile::add_signal_value(
-    VCDTimedValue * time_val,
+    VCDTimedValue&& time_val,
     VCDSignalHash   hash
 ){
-    this -> val_map[hash] -> push_back(time_val);
+    assert(val_map.find(hash) != val_map.end());
+
+    val_map[hash].push_back(time_val);
 }
 
 
 /*!
 */
 std::vector<VCDTime>* VCDFile::get_timestamps(){
-    return &this -> times;
+    return &times; // what the fuck is this pointer for?
 }
 
 
 /*!
 */
 std::vector<VCDScope*>* VCDFile::get_scopes(){
-    return &this -> scopes;
+    return &scopes; // what the fuck is this pointer for?
 }
 
 
@@ -118,49 +96,42 @@ std::vector<VCDSignal*>* VCDFile::get_signals(){
 void VCDFile::add_timestamp(
     VCDTime time
 ){
-    this -> times.push_back(time);
+    times.push_back(time);
 }
 
 /*!
 */
 VCDValue * VCDFile::get_signal_value_at (
     const VCDSignalHash& hash,
-    VCDTime       time,
+    VCDTime time,
     bool erase_prior
 ){
     auto find = val_map.find(hash); 
-    if(find == this -> val_map.end()) {
+    if(find == val_map.end()) {
         return nullptr;
     }
     
-    VCDSignalValues * vals = find->second;
+    VCDSignalValues& vals = find->second;
 
-    if(vals -> size() == 0) {
+    if(vals.size() == 0) {
         return nullptr;
     }
 
-    VCDSignalValues::iterator erase_until = vals->begin();
+    VCDSignalValues::iterator erase_until = vals.begin();
 
     VCDValue * tr = nullptr;
 
-    for(auto it = vals -> begin();
-             it != vals -> end();
-             ++ it) {
-
-        if((*it) -> time <= time) {
+    for(auto it = vals.begin(); it != vals.end(); ++ it) {
+        if((*it).time <= time) {
             erase_until = it;
-            tr = (*it) -> value;
+            tr = &(it->value);
         } else {
             break;
         }
     }
 
     if (erase_prior) {
-        // avoid O(n^2) performance for large sequential scans
-        for (auto i = vals->begin() ; i != erase_until; i++) {
-            delete (*i) -> value;
-        }
-        vals->erase(vals->begin(), erase_until);
+        vals.erase(vals.begin(), erase_until);
     }
 
     return tr;

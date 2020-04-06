@@ -4,54 +4,48 @@
 
 /*!
 */
-VCDValue::VCDValue    (
-    VCDBit  value
-){
-    this -> type = VCD_SCALAR;
-    this -> value.val_bit = value;
+VCDValue::VCDValue(VCDBit  value){
+    type_ = VCD_SCALAR;
+    value_ = value;
 }
 
 /*!
 */
-VCDValue::VCDValue    (
-    VCDBitVector *  value
-){
-    this -> type = VCD_VECTOR;
-    this -> value.val_vector= value;
+VCDValue::VCDValue(VCDBitVector&&  value){
+    type_ = VCD_VECTOR;
+    value_ = value;
 }
 
 /*!
 */
-VCDValue::VCDValue    (
-    VCDReal value
-){
-    this -> type = VCD_REAL;
-    this -> value.val_real = value;
+VCDValue::VCDValue(VCDReal value){
+    type_ = VCD_REAL;
+    value_ = value;
 }
 
 
-VCDValueType   VCDValue::get_type(){
-    return this -> type;
+VCDValueType VCDValue::get_type() const{
+    return type_;
 }
 
 
 /*!
 */
-VCDBit       VCDValue::get_value_bit(){
-    return this -> value.val_bit;
+VCDBit VCDValue::get_value_bit() const{
+    return std::get<VCDBit>(value_);
 }
 
 
 /*!
 */
-VCDBitVector * VCDValue::get_value_vector(){
-    return this -> value.val_vector;
+VCDBitVector const& VCDValue::get_value_vector() const{
+    return std::get<VCDBitVector>(value_);
 }
 
 
 /*!
 */
-VCDReal      VCDValue::get_value_real(){
-    return this -> value.val_real;
+VCDReal VCDValue::get_value_real() const{
+    return std::get<VCDReal>(value_);
 }
 

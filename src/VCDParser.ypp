@@ -194,63 +194,55 @@ value_change:
 scalar_value_change:  TOK_VALUE TOK_IDENTIFIER {
 
     VCDSignalHash   hash  = $2;
-    VCDTimedValue * toadd = new VCDTimedValue();
-    
-    toadd -> time   = current_time;
-    toadd -> value  = new VCDValue($1);
+    VCDTimedValue   toadd = {
+        current_time,
+        VCDValue($1) };
 
-    driver.fh -> add_signal_value(toadd, hash);
-
+    driver.fh -> add_signal_value(std::move(toadd), hash);
 }
 
 
 vector_value_change: 
     TOK_BIN_NUM     TOK_IDENTIFIER {
 
-    VCDSignalHash   hash  = $2;
-    VCDTimedValue * toadd = new VCDTimedValue();
-    
-    toadd -> time   = current_time;
+    VCDBitVector vec;
+    vec.reserve($1.size()-1);
 
-    VCDBitVector * vec = new VCDBitVector();
-    VCDValue * val = new VCDValue(vec);
-
-    for(int i =1; i < $1.size(); i ++) {
+    for(int i=1; i < $1.size(); i++) {
         switch($1[i]) {
             case '0':
-                vec -> push_back(VCD_0);
+                vec.push_back(VCD_0);
                 break;
             case '1':
-                vec -> push_back(VCD_1);
+                vec.push_back(VCD_1);
                 break;
             case 'x':
             case 'X':
-                vec -> push_back(VCD_X);
+                vec.push_back(VCD_X);
                 break;
             case 'z':
             case 'Z':
-                vec -> push_back(VCD_Z);
+                vec.push_back(VCD_Z);
                 break;
             default:
-                vec -> push_back(VCD_X);
+                vec.push_back(VCD_X);
                 break;
         }
     }
 
-    toadd -> value = val;
+    VCDSignalHash hash  = $2;
+    VCDTimedValue toadd = {
+        current_time,
+        VCDValue(std::move(vec))
+        };
 
-    driver.fh -> add_signal_value(toadd, hash);
+    driver.fh -> add_signal_value(std::move(toadd), hash);
 
 }
 |   TOK_REAL_NUM    TOK_IDENTIFIER {
 
     VCDSignalHash   hash  = $2;
-    VCDTimedValue * toadd = new VCDTimedValue();
-    
-    toadd -> time   = current_time;
-    toadd -> value  = 0;
 
-    VCDValue * val;
     VCDReal real_value;
     
     // Legal way of parsing dumped floats according to the spec.
@@ -259,9 +251,12 @@ vector_value_change:
     double tmp;
     std::sscanf(buffer, "%lg", &tmp);
     real_value = tmp;
-    
-    toadd -> value = new VCDValue(real_value);
-    driver.fh -> add_signal_value(toadd, hash);
+
+    VCDTimedValue toadd = {
+        current_time,
+        VCDValue(real_value)
+        };
+    driver.fh -> add_signal_value(std::move(toadd), hash);
 }
 
 reference:
