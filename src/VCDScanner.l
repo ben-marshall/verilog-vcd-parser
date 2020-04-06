@@ -297,7 +297,7 @@ VERSION_TEXT        {COMMENT_TEXT}
 <IN_SIMTIME>{DECIMAL_NUM} {
     BEGIN(INITIAL);
     //std::cout << yytext << std::endl;
-    return VCDParser::parser::make_TOK_DECIMAL_NUM(std::atoi(yytext),loc);
+    return VCDParser::parser::make_TOK_DECIMAL_NUM(std::atoll(yytext),loc);
 }
 
 {KW_DUMPALL} {

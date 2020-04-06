@@ -77,7 +77,7 @@ VCDTime current_time = 0;
 %token <std::string>    TOK_REAL_NUM          
 %token                  TOK_REAL_NUMBER       
 %token <std::string>    TOK_IDENTIFIER        
-%token <int>            TOK_DECIMAL_NUM       
+%token <VCDTime>        TOK_DECIMAL_NUM
 %token                  END  0 "end of file"
 
 %start input
