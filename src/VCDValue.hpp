@@ -11,8 +11,6 @@
 IEEE floating point number.
 */
 class VCDValue {
-
-
     //! Convert a VCDBit to a single char
     static char VCDBit2Char(VCDBit b) {
         switch(b) {
@@ -29,6 +27,7 @@ class VCDValue {
     }
 
     public:
+        typedef std::variant<VCDBit, VCDBitVector, VCDReal> variant_t;
         /*!
         @brief Create a new VCDValue with the type VCD_SCALAR
         */
@@ -58,13 +57,36 @@ class VCDValue {
         //! Get the real value of the instance.
         VCDReal get_value_real() const;
 
+        template<class T>
+        T const& get_value_T() const { return std::get<T>(value_); }
+
+
     protected:
         //! The type of value this instance stores.
         VCDValueType type_;
         
         //! The actual value stored, as identified by type.
-        std::variant<VCDBit, VCDBitVector, VCDReal> value_;
+        variant_t value_;
 };
+
+template<class T>
+inline T get_value_T(VCDValue const & vv) {
+    return vv.get_value_T<T>();
+}
+
+template<>
+inline unsigned long get_value_T(VCDValue const & vv)  {
+    auto val = vv.get_value_T<VCDBitVector>();
+
+    unsigned long ret = 0;
+    for(auto x : val) {
+        ret *= 2;
+        if(x  == VCD_1)
+            ret += 1;
+    }
+
+    return ret;
+}
 
 
 //! A signal value tagged with times.

@@ -24,11 +24,11 @@ int main(int argc, char **argv)
         std::cout << "Parse successful." << std::endl;
         std::cout << "Version:       " << trace->version << std::endl;
         std::cout << "Date:          " << trace->date << std::endl;
-        std::cout << "Signal count:  " << trace->get_signals()->size() << std::endl;
-        std::cout << "Times Recorded:" << trace->get_timestamps()->size() << std::endl;
+        std::cout << "Signal count:  " << trace->get_signals().size() << std::endl;
+        std::cout << "Times Recorded:" << trace->get_timestamps().size() << std::endl;
 
         // Print out every signal in every scope.
-        for (VCDScope *scope : *trace->get_scopes())
+        for (VCDScope *scope : trace->get_scopes())
         {
 
             std::cout << "Scope: " << scope->name << std::endl;

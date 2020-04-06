@@ -14,9 +14,10 @@
 @brief Top level object to represent a single VCD file.
 */
 class VCDFile {
-
     public:
-        
+
+        typedef std::map<VCDSignalHash, VCDSignalValues> value_map_t;
+
         //! Instance a new VCD file container.
         VCDFile();
         
@@ -93,17 +94,26 @@ class VCDFile {
         @brief Return a pointer to the set of timestamp samples present in
                the VCD file.
         */
-        std::vector<VCDTime>* get_timestamps();
-        
+        std::vector<VCDTime> const& get_timestamps() const;
+
+
+        VCDTime get_last_time() const {return *times.crbegin();}
+        VCDTime get_first_time() const {return *times.begin();}
+
+
         /*!
         @brief Get a vector of all scopes present in the file.
         */
-        std::vector<VCDScope*>* get_scopes();
+        std::vector<VCDScope*> const& get_scopes(); //cannot be const, 'cause stupid pointer
         
         /*!
         @brief Return a flattened vector of all signals in the file.
         */
-        std::vector<VCDSignal*>* get_signals();
+        std::vector<VCDSignal*> const& get_signals(); //cannot be const, 'cause stupid pointer
+
+        VCDSignalValues const& get_values(const VCDSignalHash& hash) const {
+            return val_map.at(hash);
+        }
 
     protected:
         
@@ -119,7 +129,7 @@ class VCDFile {
         std::vector<VCDTime>    times;
 
         //! Map of hashes onto vectors of times and signal values.
-        std::map<VCDSignalHash, VCDSignalValues> val_map;
+        value_map_t val_map;
 };
 
 

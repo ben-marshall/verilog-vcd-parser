@@ -72,22 +72,22 @@ void VCDFile::add_signal_value(
 
 /*!
 */
-std::vector<VCDTime>* VCDFile::get_timestamps(){
-    return &times; // what the fuck is this pointer for?
+std::vector<VCDTime> const& VCDFile::get_timestamps() const{
+    return times;
 }
 
 
 /*!
 */
-std::vector<VCDScope*>* VCDFile::get_scopes(){
-    return &scopes; // what the fuck is this pointer for?
+std::vector<VCDScope*> const& VCDFile::get_scopes(){
+    return scopes;
 }
 
 
 /*!
 */
-std::vector<VCDSignal*>* VCDFile::get_signals(){
-    return &this -> signals;
+std::vector<VCDSignal*> const& VCDFile::get_signals(){
+    return signals;
 }
 
 
