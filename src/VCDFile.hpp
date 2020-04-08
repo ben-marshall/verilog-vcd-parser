@@ -35,6 +35,9 @@ class VCDFile {
         //! Version string of the simulator which generated the VCD.
         std::string version;
 
+        //! Version string of the simulator which generated the VCD.
+        std::string comment;
+
         //! Root scope node of the VCD signals
         VCDScope * root_scope;
 
@@ -102,6 +105,14 @@ class VCDFile {
             bool erase_prior = false
         );
 
+        /*!
+        @brief Get a vector of VCD time values
+        @param hash in - The hashcode for the signal to identify it.
+        @returns A pointer to the vector of time values, or nullptr if hash not found
+        */
+        VCDSignalValues * get_signal_values (
+            VCDSignalHash hash
+        );
         
         /*!
         @brief Return a pointer to the set of timestamp samples present in

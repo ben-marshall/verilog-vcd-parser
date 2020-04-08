@@ -3,4 +3,5 @@
 *.o
 *.output
 build/
-
+vcdtool/vcdtool
+vcdtool/gitversion.h

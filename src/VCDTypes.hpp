@@ -124,6 +124,8 @@ typedef struct {
     VCDScope          * scope;
     VCDSignalSize       size;
     VCDVarType          type;
+    int                 lindex; // -1 if no brackets, otherwise [lindex] or [lindex:rindex]
+    int                 rindex; // -1 if not [lindex:rindex]
 } VCDSignal;
 
 

@@ -48,6 +48,12 @@ class VCDFileParser {
         //! Should we debug parsing of tokens?
         bool trace_parsing;
 
+        //! Ignore anything before this timepoint
+        VCDTime start_time;
+
+        //! Ignore anything after this timepoint
+        VCDTime end_time;
+
         //! Reports errors to stderr.
         void error(const VCDParser::location & l, const std::string & m);
 
