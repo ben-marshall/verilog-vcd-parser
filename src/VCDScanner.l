@@ -29,20 +29,19 @@ static VCDParser::location loc;
 BRACKET_O           \[
 BRACKET_C           \]
 COLON               :
-DOLLAR              \$
-KW_END              \$end 
-KW_COMMENT          \$comment
-KW_DATE             \$date
-KW_ENDDEFINITIONS   \$enddefinitions
-KW_SCOPE            \$scope
-KW_TIMESCALE        \$timescale
-KW_UPSCOPE          \$upscope
-KW_VAR              \$var
-KW_VERSION          \$version
-KW_DUMPALL          \$dumpall
-KW_DUMPOFF          \$dumpoff
-KW_DUMPON           \$dumpon
-KW_DUMPVARS         \$dumpvars
+KW_END              $end 
+KW_COMMENT          $comment
+KW_DATE             $date
+KW_ENDDEFINITIONS   $enddefinitions
+KW_SCOPE            $scope
+KW_TIMESCALE        $timescale
+KW_UPSCOPE          $upscope
+KW_VAR              $var
+KW_VERSION          $version
+KW_DUMPALL          $dumpall
+KW_DUMPOFF          $dumpoff
+KW_DUMPON           $dumpon
+KW_DUMPVARS         $dumpvars
 KW_BEGIN            begin
 KW_FORK             fork
 KW_FUNCTION         function
@@ -70,15 +69,17 @@ VAR_TYPE_WIRE       wire
 VAR_TYPE_WOR        wor
 HASH                #
 SCALAR_NUM          0|1|x|X|z|Z       
+
 BIN_NUM             (b|B)(0|1|x|X|z|Z)+
 REAL_NUM            (r|r)(0-9)+[\.(0.9)+]
 IDENTIFIER_CODE     [a-zA-Z_0-9!/\,\.@':~#\*\(\)\+\{\}\$\%\[\]`\"&;<>=\?\-\^\(\)\|\\]+
 SCOPE_IDENTIFIER    [a-zA-Z_][a-zA-Z_0-9\(\)]*
+
 DECIMAL_NUM         [0-9]+
 
 COMMENT_TEXT        [^("$")]*
-DATE_TEXT           [^("$")]*
-VERSION_TEXT        [^("$")]*
+DATE_TEXT           {COMMENT_TEXT}
+VERSION_TEXT        {COMMENT_TEXT}
 
 %x IN_COMMENT
 %x IN_DATE
