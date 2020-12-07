@@ -10,6 +10,7 @@
 #include <map>
 #include <set>
 #include <stack>
+#include <limits>
 
 #include "VCDParser.hpp"
 #include "VCDTypes.hpp"
