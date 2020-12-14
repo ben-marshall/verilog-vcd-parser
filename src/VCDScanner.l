@@ -71,7 +71,7 @@ HASH                #
 SCALAR_NUM          0|1|x|X|z|Z       
 
 BIN_NUM             (b|B)(0|1|x|X|z|Z)+
-REAL_NUM            (r|r)(0-9)+[\.(0.9)+]
+REAL_NUM            (r|r)[0-9]+(\.[0-9]+)?
 IDENTIFIER_CODE     [a-zA-Z_0-9!/\,\.@':~#\*\(\)\+\{\}\$\%\[\]`\"&;<>=\?\-\^\(\)\|\\]+
 SCOPE_IDENTIFIER    [a-zA-Z_][a-zA-Z_0-9\(\)]*
 
