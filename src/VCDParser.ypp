@@ -291,8 +291,13 @@ reference:
     TOK_BRACKET_C{
     $$  = new VCDSignal();
     $$ -> reference = $1;
-    $$ -> lindex = $3;
-    $$ -> rindex = $5;
+    if ($3 == 0 && $3 == $5) {
+        $$ -> lindex = -1;
+        $$ -> rindex = -1;
+    } else {
+        $$ -> lindex = $3;
+        $$ -> rindex = $5;
+    }
 }
 
 comment_text :
